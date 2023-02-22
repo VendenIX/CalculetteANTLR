@@ -23,7 +23,7 @@ calcul returns [ String code ]
     ;
 decl returns [ String code ]
     :
-        TYPE IDENTIFIANT finInstruction | TYPE IDENTIFIANT '=' expression finInstruction
+        TYPE IDENTIFIANT finInstruction
         {
             if ($TYPE.text.equals("int")){
                 $code = "PUSHI 0\n";
@@ -31,6 +31,17 @@ decl returns [ String code ]
             }
             else {
                 $code = "PUSHI 0\n";
+                tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
+            }
+        }
+        | TYPE IDENTIFIANT '=' expression finInstruction
+        {
+            if ($TYPE.text.equals("int")){
+                $code = "PUSHI 0\n" + $expression.code + "\n";
+                tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
+            }
+            else {
+                $code = "PUSHI 0\n" + $expression.code + "\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
             }
         }
