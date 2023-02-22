@@ -1,6 +1,8 @@
 grammar Calculette;
 
- 
+@headers {
+        }
+
 @members {
    private TablesSymboles tablesSymboles = new TablesSymboles();
         }
@@ -51,7 +53,23 @@ assignation returns [ String code ]
     : IDENTIFIANT '=' expression
         {  
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHI" + $expression.code + "\n" + "STOREG " + vi.address + "\n";
+            $code = $expression.code + "STOREG " + vi.address + "\n";
+        }
+    ;
+entree returns [ String code ] 
+    : 'input' '(' IDENTIFIANT ')'
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            if (vi.type == "int"){
+                $code = "READ\n" + "STOREG " + vi.address + "\n";
+            }
+        }
+    ;
+
+sortie returns [ String code ] 
+    : 'print' '(' expression ')'
+        {
+           $code = $expression.code +"WRITE\nPOP \n";
         }
     ;
 
@@ -64,9 +82,13 @@ instruction returns [ String code ]
         { 
 		    $code = $assignation.code;
         }
-    | finInstruction
+    | entree finInstruction
+        {   
+            $code = $entree.code;
+        }
+    | sortie finInstruction
         {
-            $code="";
+            $code= $sortie.code;
         }
     ;
 
@@ -92,7 +114,12 @@ expression returns [ String code ]
     | ENTIER
         {
             $code = "PUSHI " + $ENTIER.text + "\n";
-        }    
+        }  
+    | IDENTIFIANT 
+        { 
+        VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
+        $code = "PUSHG "+ vi.address + "\n";
+        }
     ;
 
 finInstruction : ( NEWLINE | ';' )+ ;
@@ -105,7 +132,7 @@ ENTIER : ('0'..'9')+  ;
 TYPE : 'int' | 'double' ;
 
 MOTCLE
-    :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws'
+    :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws' | 'print' | 'input'
     ;
 
 IDENTIFIANT
