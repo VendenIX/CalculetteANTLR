@@ -1,5 +1,6 @@
 grammar Calculette;
 
+ 
 @members {
    private TablesSymboles tablesSymboles = new TablesSymboles();
         }
@@ -79,7 +80,7 @@ expression returns [ String code ]
     | IDENTIFIANT
         {
             VariableInfo vi = tablesSymboles.getVariableInfo($IDENTIFIANT.text);
-            $code = vi.code
+            $code = vi.code;
         }
     | ENTIER
         {
