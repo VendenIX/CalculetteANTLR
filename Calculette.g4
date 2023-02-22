@@ -1,66 +1,110 @@
 grammar Calculette;
 
-
-@parser::members {
-
-    private int evalexpr (int x, String op, int y) {
-        if ( op.equals("*") ){
-            return x*y;
-        } else if ( op.equals("+") ){
-            return x+y;
-        } else if (op.equals("/")) {
-            return x/y;
-        } else if (op.equals("-")) {
-            return x-y;
+@members {
+   private TablesSymboles tablesSymboles = new TablesSymboles();
         }
-        else {
-           System.err.println("Opérateur arithmétique incorrect : '"+op+"'");
-           throw new IllegalArgumentException("Opérateur arithmétique incorrect : '"+op+"'");
-        }
-    }
 
-}
 
 start
-    : expr EOF {System.out.println($expr.val);}
+    : calcul EOF;
+
+calcul returns [ String code ]
+@init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
+@after{ System.out.println($code); } // On affiche l’ensemble du code produit
+
+    :   (decl { $code += $decl.code; })*
+
+        NEWLINE*
+
+        (instruction { $code += $instruction.code; })*
+
+        { $code += "  HALT\n"; }
+    ;
+decl returns [ String code ]
+    :
+        TYPE IDENTIFIANT finInstruction
+        {
+            if ($TYPE.text.equals("int")){
+                $code = "STOREG 0" + "\n";
+                tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
+            }
+            else {
+                $code = "STOREG 0" + "\n";
+                tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
+            }
+        }
     ;
 
-/*
-    '(' expr ')'
-    expr '*' expr
-    expr '/' expr
-    expr '+' expr
-    expr '-' expr
-    ENTIER
- */
-
-/*
-expr  returns [ int val ]
-    :  '(' a=expr ')' {$val = $a.val;} 
-    | a=expr '*' b=expr {$val = $a.val * $b.val;} 
-    | a=expr '/' b=expr {$val = $a.val / $b.val;}
-    | a=expr '+' b=expr {$val = $a.val + $b.val;}
-    | a=expr '-' b=expr {$val = $a.val - $b.val;}
-    | c=ENTIER {$val = $c.int;}
+assignation returns [ String code ] 
+    : IDENTIFIANT '=' expression
+        {  
+            $code = "STOREG " + $expression.code + "\n";
+        }
     ;
-*/
 
-expr  returns [ int val ]
-    :  '(' a=expr ')' {$val = $a.val;} 
-    | '-' b=expr {$val = -1*$b.val;}
-    | a=expr op=('*'|'/') b=expr {$val = evalexpr($a.val,$op.text,$b.val);} 
-    | a=expr op=('+'|'-') b=expr {$val = evalexpr($a.val,$op.text,$b.val);}
-    | c=ENTIER {$val = $c.int;}
+instruction returns [ String code ] 
+    : expression finInstruction 
+        { 
+            $code = $expression.code;
+        }
+    | assignation finInstruction
+        { 
+		    $code = $assignation.code;
+        }
+    | finInstruction
+        {
+            $code="";
+        }
     ;
-    /* 
-expr returns [ int val ]
-    : a=expr op=('*'|'/') b=expr {System.out.println($op.text);}
-    */
+
+expression returns [ String code ]
+    : '(' c=expression ')'
+        {
+            $code = $c.code;
+        }
+    | '-' d=expression 
+        {
+            $code = "PUSHI 0\n"+ $d.code + "SUB\n";
+        }
+    | a = expression op=('*'|'/') b=expression
+        {
+            if($op.text.equals("*")){ $code = $a.code + $b.code + "MUL\n";}
+            else {$code = $a.code + $b.code + "DIV\n";}
+        }
+    | a = expression op=('+'|'-') b=expression
+        {
+            if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
+            else {$code = $a.code + $b.code + "SUB\n";}
+        }
+    | IDENTIFIANT
+        {
+            VariableInfo vi = tablesSymboles.getVariableInfo($IDENTIFIANT.text);
+            $code = vi.code
+        }
+    | ENTIER
+        {
+            $code = "PUSHI " + $ENTIER.text + "\n";
+        }    
+    ;
+
+finInstruction : ( NEWLINE | ';' )+ ;
+
 // lexer
-NEWLINE : '\r'? '\n'  -> skip;
+NEWLINE : '\r'? '\n'  ;
+
+ENTIER : ('0'..'9')+  ;
+
+TYPE : 'int' | 'double' ;
+
+MOTCLE
+    :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws'
+    ;
+
+IDENTIFIANT
+    :   ('a'..'z' | 'A'..'Z' | '_')('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
+    ;
 
 WS :   (' '|'\t')+ -> skip  ;
 
-ENTIER : ('0'..'9')+  ;
 
 UNMATCH : . -> skip ;
