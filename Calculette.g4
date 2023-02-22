@@ -23,14 +23,14 @@ calcul returns [ String code ]
     ;
 decl returns [ String code ]
     :
-        TYPE IDENTIFIANT finInstruction
+        TYPE IDENTIFIANT finInstruction | TYPE IDENTIFIANT '=' expression finInstruction
         {
             if ($TYPE.text.equals("int")){
-                $code = "STOREG 0" + "\n";
+                $code = "PUSHI 0\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
             }
             else {
-                $code = "STOREG 0" + "\n";
+                $code = "PUSHI 0\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
             }
         }
@@ -39,7 +39,8 @@ decl returns [ String code ]
 assignation returns [ String code ] 
     : IDENTIFIANT '=' expression
         {  
-            $code = "STOREG " + $expression.code + "\n";
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHI" + $expression.code + "\n" + "STOREG " + vi.address + "\n";
         }
     ;
 
@@ -76,11 +77,6 @@ expression returns [ String code ]
         {
             if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
             else {$code = $a.code + $b.code + "SUB\n";}
-        }
-    | IDENTIFIANT
-        {
-            VariableInfo vi = tablesSymboles.getVariableInfo($IDENTIFIANT.text);
-            $code = vi.code;
         }
     | ENTIER
         {
