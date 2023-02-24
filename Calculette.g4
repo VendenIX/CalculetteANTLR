@@ -132,6 +132,12 @@ expression returns [ String code ]
 
 finInstruction : ( NEWLINE | ';' )+ ;
 
+COMMENTAIRE
+    // Simple commentaire      Commentaire multi-lignes
+    : (('%' ~('\n'|'\r')*) | ('/*' .*? '*/'))
+    -> skip
+    ;
+
 // lexer
 NEWLINE : '\r'? '\n'  ;
 
