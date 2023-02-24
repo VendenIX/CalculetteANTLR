@@ -1,0 +1,5 @@
+PUSHI 4
+PUSHI 2
+MUL
+  HALT
+

@@ -23,6 +23,8 @@ calcul returns [ String code ]
 
         { $code += "  HALT\n"; }
     ;
+
+//Parse les déclarations de variables
 decl returns [ String code ]
     :
         TYPE IDENTIFIANT finInstruction
@@ -49,6 +51,7 @@ decl returns [ String code ]
         }
     ;
 
+//Parse les assignations de variables
 assignation returns [ String code ] 
     : IDENTIFIANT '=' expression
         {  
@@ -56,6 +59,8 @@ assignation returns [ String code ]
             $code = $expression.code + "STOREG " + vi.address + "\n";
         }
     ;
+
+//Parse les entrées clavier
 entree returns [ String code ] 
     : 'input' '(' IDENTIFIANT ')'
         {
@@ -66,6 +71,7 @@ entree returns [ String code ]
         }
     ;
 
+//Parse les sorties clavier
 sortie returns [ String code ] 
     : 'print' '(' expression ')'
         {
@@ -73,6 +79,7 @@ sortie returns [ String code ]
         }
     ;
 
+//Parse les instructions (assignations, entrées, sorties, expressions)
 instruction returns [ String code ] 
     : expression finInstruction 
         { 
@@ -92,6 +99,7 @@ instruction returns [ String code ]
         }
     ;
 
+//Parse les expressions (opérations, parenthèses, entiers, variables)
 expression returns [ String code ]
     : '(' c=expression ')'
         {
@@ -139,7 +147,46 @@ IDENTIFIANT
     :   ('a'..'z' | 'A'..'Z' | '_')('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
     ;
 
+// Ignorer les espaces et les tabulations
 WS :   (' '|'\t')+ -> skip  ;
 
-
 UNMATCH : . -> skip ;
+
+/*
+    Rappel des instructions 
+
+    Opérations sur la pile:
+        PUSHI n: met la valeur n sur la pile
+        POP: enlève la valeur du sommet de la pile
+        DUP: duplique la valeur du sommet de la pile
+        ADD (SUB, MUL, DIV): effectue l’opération sur les deux valeurs du sommet de la pile (la valeur du sommet est la deuxième opérande)
+    Données: 
+        PUSHG n: copie une valeur de la pile à l'adresse n au sommet de la pile
+        PUSHL n:
+        STOREG n: stocke la valeur du sommet de la pile à l'adresse n
+        STOREL n:
+        READ: lit une valeur au clavier et la met sur la pile
+        WRITE: écrit la valeur du sommet de la pile
+    Contrôle de flot:
+        JUMP Label: saute à l'instruction Label
+        JUMPF Label: saute à l'instruction Label si la valeur du sommet de la pile est 0
+        CALL Label: empile l'adresse de l'instruction suivante et saute à l'instruction Label
+        RETURN: saute à l'instruction suivant l'instruction CALL
+    Flottants:
+        PUSHF f: met la valeur f sur la pile
+        FADD (FSUB, FMUL, FDIV): effectue l’opération sur les deux valeurs du sommet de la pile (la valeur du sommet est la deuxième opérande)
+        FSUP (FSUPEQ,FINF,FINFEQ,FEQ,FNEQ): effectue l’opération sur les deux valeurs du sommet de la pile (la valeur du sommet est la deuxième opérande)
+        READF: lit une valeur au clavier et la met sur la pile
+        WRITEF: écrit la valeur du sommet de la pile
+        ITOF: convertit la valeur du sommet de la pile en flottant
+        FTOI: convertit la valeur du sommet de la pile en entier
+    Autres:
+        FREE n: libère n cases de la pile
+        ALLOC n: alloue n cases de la pile
+        HALT: arrête l'exécution du programme
+        PUSHR n: copie une valeur de la pile à l'adresse relative n au sommet de la pile
+        STORER n: stocke la valeur du sommet de la pile à l'adresse relative n
+        JUMPR Label: saute à l'instruction relative Label
+        PUSHSP: met l'adresse du sommet de la pile sur la pile
+        PUSHFP: met l'adresse du début de la pile de la fonction sur la pile
+ */

@@ -1,4 +1,4 @@
-// Generated from Calculette.g4 by ANTLR 4.7.2
+// Generated from java-escape by ANTLR 4.11.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -46,6 +46,26 @@ public interface CalculetteListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignation(CalculetteParser.AssignationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#entree}.
+	 * @param ctx the parse tree
+	 */
+	void enterEntree(CalculetteParser.EntreeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#entree}.
+	 * @param ctx the parse tree
+	 */
+	void exitEntree(CalculetteParser.EntreeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#sortie}.
+	 * @param ctx the parse tree
+	 */
+	void enterSortie(CalculetteParser.SortieContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#sortie}.
+	 * @param ctx the parse tree
+	 */
+	void exitSortie(CalculetteParser.SortieContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CalculetteParser#instruction}.
 	 * @param ctx the parse tree
