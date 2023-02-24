@@ -1,5 +1,8 @@
 grammar Calculette;
 
+@headers {
+        }
+
 @members {
    private TablesSymboles tablesSymboles = new TablesSymboles();
         }
@@ -21,15 +24,14 @@ calcul returns [ String code ]
         { $code += "  HALT\n"; }
     ;
 decl returns [ String code ]
-    :
-        TYPE IDENTIFIANT finInstruction
+    : TYPE IDENTIFIANT finInstruction
         {
             if ($TYPE.text.equals("int")){
-                $code = "STOREG 0" + "\n";
+                $code = "PUSHI 0\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
             }
             else {
-                $code = "STOREG 0" + "\n";
+                $code = "PUSHI 0\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
             }
         }
@@ -38,7 +40,37 @@ decl returns [ String code ]
 assignation returns [ String code ] 
     : IDENTIFIANT '=' expression
         {  
-            $code = "STOREG " + $expression.code + "\n";
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = $expression.code + "STOREG " + vi.address + "\n";
+        }
+    ;
+
+condition returns [ String code]
+    : g=expression op=('=='|'!='|'<'|'<='|'>'|'>=') d=expression
+        {$code = $g.code + $d.code + ($op.text)+ "\n";
+        }
+    |'true'
+        {$code = "PUSHI 1\n";
+        }
+    |'false'
+        {$code = "PUSHI 0\n";
+        }
+    ;
+
+entree returns [ String code ] 
+    : 'input' '(' IDENTIFIANT ')'
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            if (vi.type == "int"){
+                $code = "READ\n" + "STOREG " + vi.address + "\n";
+            }
+        }
+    ;
+
+sortie returns [ String code ] 
+    : 'print' '(' expression ')'
+        {
+           $code = $expression.code +"WRITE\nPOP \n";
         }
     ;
 
@@ -51,9 +83,13 @@ instruction returns [ String code ]
         { 
 		    $code = $assignation.code;
         }
-    | finInstruction
+    | entree finInstruction
+        {   
+            $code = $entree.code;
+        }
+    | sortie finInstruction
         {
-            $code="";
+            $code= $sortie.code;
         }
     ;
 
@@ -76,15 +112,15 @@ expression returns [ String code ]
             if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
             else {$code = $a.code + $b.code + "SUB\n";}
         }
-    | IDENTIFIANT
-        {
-            VariableInfo vi = tablesSymboles.getVariableInfo($IDENTIFIANT.text);
-            $code = vi.code
-        }
     | ENTIER
         {
             $code = "PUSHI " + $ENTIER.text + "\n";
-        }    
+        }  
+    | IDENTIFIANT 
+        { 
+        VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
+        $code = "PUSHG "+ vi.address + "\n";
+        }
     ;
 
 finInstruction : ( NEWLINE | ';' )+ ;
@@ -97,7 +133,7 @@ ENTIER : ('0'..'9')+  ;
 TYPE : 'int' | 'double' ;
 
 MOTCLE
-    :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws'
+    :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws' | 'print' | 'input'
     ;
 
 IDENTIFIANT

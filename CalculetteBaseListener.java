@@ -1,139 +1,136 @@
-// Generated from MVaP.g4 by ANTLR 4.12.0
-
-    import java.util.HashMap;
-
+// Generated from Calculette.g4 by ANTLR 4.12.0
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
- * This class provides an empty implementation of {@link MVaPListener},
+ * This class provides an empty implementation of {@link CalculetteListener},
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
 @SuppressWarnings("CheckReturnValue")
-public class MVaPBaseListener implements MVaPListener {
+public class CalculetteBaseListener implements CalculetteListener {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProgram(MVaPParser.ProgramContext ctx) { }
+	@Override public void enterStart(CalculetteParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitProgram(MVaPParser.ProgramContext ctx) { }
+	@Override public void exitStart(CalculetteParser.StartContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInstr(MVaPParser.InstrContext ctx) { }
+	@Override public void enterCalcul(CalculetteParser.CalculContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInstr(MVaPParser.InstrContext ctx) { }
+	@Override public void exitCalcul(CalculetteParser.CalculContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCommande1(MVaPParser.Commande1Context ctx) { }
+	@Override public void enterDecl(CalculetteParser.DeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCommande1(MVaPParser.Commande1Context ctx) { }
+	@Override public void exitDecl(CalculetteParser.DeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInstr1(MVaPParser.Instr1Context ctx) { }
+	@Override public void enterAssignation(CalculetteParser.AssignationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInstr1(MVaPParser.Instr1Context ctx) { }
+	@Override public void exitAssignation(CalculetteParser.AssignationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCommande2(MVaPParser.Commande2Context ctx) { }
+	@Override public void enterCondition(CalculetteParser.ConditionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCommande2(MVaPParser.Commande2Context ctx) { }
+	@Override public void exitCondition(CalculetteParser.ConditionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInstr2(MVaPParser.Instr2Context ctx) { }
+	@Override public void enterEntree(CalculetteParser.EntreeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInstr2(MVaPParser.Instr2Context ctx) { }
+	@Override public void exitEntree(CalculetteParser.EntreeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInstr2f(MVaPParser.Instr2fContext ctx) { }
+	@Override public void enterSortie(CalculetteParser.SortieContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInstr2f(MVaPParser.Instr2fContext ctx) { }
+	@Override public void exitSortie(CalculetteParser.SortieContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCommandeSaut(MVaPParser.CommandeSautContext ctx) { }
+	@Override public void enterInstruction(CalculetteParser.InstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCommandeSaut(MVaPParser.CommandeSautContext ctx) { }
+	@Override public void exitInstruction(CalculetteParser.InstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSaut(MVaPParser.SautContext ctx) { }
+	@Override public void enterExpression(CalculetteParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSaut(MVaPParser.SautContext ctx) { }
+	@Override public void exitExpression(CalculetteParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLabel(MVaPParser.LabelContext ctx) { }
+	@Override public void enterFinInstruction(CalculetteParser.FinInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLabel(MVaPParser.LabelContext ctx) { }
+	@Override public void exitFinInstruction(CalculetteParser.FinInstructionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
