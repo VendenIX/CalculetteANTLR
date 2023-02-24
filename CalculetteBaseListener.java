@@ -1,4 +1,4 @@
-// Generated from Calculette.g4 by ANTLR 4.7.2
+// Generated from Calculette.g4 by ANTLR 4.12.0
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
+@SuppressWarnings("CheckReturnValue")
 public class CalculetteBaseListener implements CalculetteListener {
 	/**
 	 * {@inheritDoc}
@@ -58,6 +59,42 @@ public class CalculetteBaseListener implements CalculetteListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssignation(CalculetteParser.AssignationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCondition(CalculetteParser.ConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCondition(CalculetteParser.ConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEntree(CalculetteParser.EntreeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEntree(CalculetteParser.EntreeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSortie(CalculetteParser.SortieContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSortie(CalculetteParser.SortieContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -24,8 +24,7 @@ calcul returns [ String code ]
         { $code += "  HALT\n"; }
     ;
 decl returns [ String code ]
-    :
-        TYPE IDENTIFIANT finInstruction
+    : TYPE IDENTIFIANT finInstruction
         {
             if ($TYPE.text.equals("int")){
                 $code = "PUSHI 0\n";
@@ -33,17 +32,6 @@ decl returns [ String code ]
             }
             else {
                 $code = "PUSHI 0\n";
-                tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
-            }
-        }
-        | TYPE IDENTIFIANT '=' expression finInstruction
-        {
-            if ($TYPE.text.equals("int")){
-                $code = "PUSHI 0\n" + $expression.code + "\n";
-                tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
-            }
-            else {
-                $code = "PUSHI 0\n" + $expression.code + "\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
             }
         }
@@ -56,6 +44,19 @@ assignation returns [ String code ]
             $code = $expression.code + "STOREG " + vi.address + "\n";
         }
     ;
+
+condition returns [ String code]
+    : g=expression op=('=='|'!='|'<'|'<='|'>'|'>=') d=expression
+        {$code = $g.code + $d.code + ($op.text)+ "\n";
+        }
+    |'true'
+        {$code = "PUSHI 1\n";
+        }
+    |'false'
+        {$code = "PUSHI 0\n";
+        }
+    ;
+
 entree returns [ String code ] 
     : 'input' '(' IDENTIFIANT ')'
         {
