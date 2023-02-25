@@ -9,13 +9,33 @@ grammar Calculette;
 
 
 start
-    : calcul EOF;
+    : calcul EOF; 
+    
+
+bloc returns [ String code ]  
+@init{ $code = new String(); }
+    : '{'
+
+        NEWLINE*
+
+        (decl { $code += $decl.code; })*
+
+        (instruction { $code += $instruction.code; })* 
+
+        NEWLINE*
+      '}'
+      
+        NEWLINE*
+    ;
+
 
 calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
 
-    :   (decl { $code += $decl.code; })*
+    :   (bloc { $code += $bloc.code; })*
+    
+        (decl { $code += $decl.code; })*
 
         NEWLINE*
 
@@ -26,8 +46,7 @@ calcul returns [ String code ]
 
 //Parse les déclarations de variables
 decl returns [ String code ]
-    :
-        TYPE IDENTIFIANT finInstruction
+    : TYPE IDENTIFIANT finInstruction
         {
             if ($TYPE.text.equals("int")){
                 $code = "PUSHI 0\n";
@@ -35,17 +54,6 @@ decl returns [ String code ]
             }
             else {
                 $code = "PUSHI 0\n";
-                tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
-            }
-        }
-        | TYPE IDENTIFIANT '=' expression finInstruction
-        {
-            if ($TYPE.text.equals("int")){
-                $code = "PUSHI 0\n" + $expression.code + "\n";
-                tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
-            }
-            else {
-                $code = "PUSHI 0\n" + $expression.code + "\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
             }
         }
@@ -60,7 +68,26 @@ assignation returns [ String code ]
         }
     ;
 
-//Parse les entrées clavier
+increment returns [ String code ]
+    : IDENTIFIANT '+=' expression
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + $expression.code + "ADD\n" + "STOREG " + vi.address + "\n";
+        }
+    ;
+
+condition returns [ String code]
+    : g=expression op=('=='|'!='|'<'|'<='|'>'|'>=') d=expression
+        {$code = $g.code + $d.code + ($op.text)+ "\n";
+        }
+    |'true'
+        {$code = "PUSHI 1\n";
+        }
+    |'false'
+        {$code = "PUSHI 0\n";
+        }
+    ;
+
 entree returns [ String code ] 
     : 'input' '(' IDENTIFIANT ')'
         {
@@ -89,6 +116,10 @@ instruction returns [ String code ]
         { 
 		    $code = $assignation.code;
         }
+    | increment finInstruction
+        {
+            $code = $increment.code;
+        }
     | entree finInstruction
         {   
             $code = $entree.code;
@@ -96,6 +127,10 @@ instruction returns [ String code ]
     | sortie finInstruction
         {
             $code= $sortie.code;
+        }
+    | bloc
+        {
+            $code = $bloc.code;
         }
     ;
 

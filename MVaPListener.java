@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // Generated from java-escape by ANTLR 4.11.1
+=======
+// Generated from MVaP.g4 by ANTLR 4.12.0
+>>>>>>> gireg
 
     import java.util.HashMap;
 

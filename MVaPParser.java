@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // Generated from java-escape by ANTLR 4.11.1
+=======
+// Generated from MVaP.g4 by ANTLR 4.12.0
+>>>>>>> gireg
 
     import java.util.HashMap;
 
@@ -13,7 +17,11 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class MVaPParser extends Parser {
+<<<<<<< HEAD
 	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+=======
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
+>>>>>>> gireg
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -164,7 +172,11 @@ public class MVaPParser extends Parser {
 				setState(23); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
+<<<<<<< HEAD
 			} while ( ((_la) & ~0x3f) == 0 && ((1L << _la) & 54043195528445936L) != 0 );
+=======
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 54043195528445936L) != 0) );
+>>>>>>> gireg
 			}
 		}
 		catch (RecognitionException re) {
@@ -389,7 +401,11 @@ public class MVaPParser extends Parser {
 			{
 			setState(43);
 			_la = _input.LA(1);
+<<<<<<< HEAD
 			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 4503874505277424L) != 0) ) {
+=======
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 4503874505277424L) != 0)) ) {
+>>>>>>> gireg
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -486,7 +502,11 @@ public class MVaPParser extends Parser {
 			{
 			setState(48);
 			_la = _input.LA(1);
+<<<<<<< HEAD
 			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 140462610448384L) != 0) ) {
+=======
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 140462610448384L) != 0)) ) {
+>>>>>>> gireg
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -622,7 +642,11 @@ public class MVaPParser extends Parser {
 			{
 			setState(58);
 			_la = _input.LA(1);
+<<<<<<< HEAD
 			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 4222124650659840L) != 0) ) {
+=======
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 4222124650659840L) != 0)) ) {
+>>>>>>> gireg
 			_errHandler.recoverInline(this);
 			}
 			else {
