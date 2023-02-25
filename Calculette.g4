@@ -9,13 +9,33 @@ grammar Calculette;
 
 
 start
-    : calcul EOF;
+    : calcul EOF; 
+    
+
+bloc returns [ String code ]  
+@init{ $code = new String(); }
+    : '{'
+
+        NEWLINE*
+
+        (decl { $code += $decl.code; })*
+
+        (instruction { $code += $instruction.code; })* 
+
+        NEWLINE*
+      '}'
+      
+        NEWLINE*
+    ;
+
 
 calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
 
-    :   (decl { $code += $decl.code; })*
+    :   (bloc { $code += $bloc.code; })*
+    
+        (decl { $code += $decl.code; })*
 
         NEWLINE*
 
@@ -42,6 +62,14 @@ assignation returns [ String code ]
         {  
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = $expression.code + "STOREG " + vi.address + "\n";
+        }
+    ;
+
+increment returns [ String code ]
+    : IDENTIFIANT '+=' expression
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + $expression.code + "ADD\n" + "STOREG " + vi.address + "\n";
         }
     ;
 
@@ -83,6 +111,10 @@ instruction returns [ String code ]
         { 
 		    $code = $assignation.code;
         }
+    | increment finInstruction
+        {
+            $code = $increment.code;
+        }
     | entree finInstruction
         {   
             $code = $entree.code;
@@ -90,6 +122,10 @@ instruction returns [ String code ]
     | sortie finInstruction
         {
             $code= $sortie.code;
+        }
+    | bloc
+        {
+            $code = $bloc.code;
         }
     ;
 
