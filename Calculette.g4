@@ -219,22 +219,6 @@ conditionbasique returns [ String code ]
         }
     ;
 
-conditionbooleenne returns [ String code ]
-    : a = condition ('&&') b=condition
-        {
-            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 0\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
-        }
-    | a = condition ('||') b=condition
-        {
-            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
-        }
-    ;
 
 finInstruction : ( NEWLINE | ';' )+ ;
 
