@@ -4,13 +4,28 @@ grammar Calculette;
         }
 
 @members {
-   private TablesSymboles tablesSymboles = new TablesSymboles();
+    private TablesSymboles tablesSymboles = new TablesSymboles();
+    private int _cur_label = 1;
+    /** générateur de nom d'étiquettes pour les boucles, pour whilebloc*/
+    private String getNewLabel() { return "Label" +(_cur_label++); }
+    // ...
         }
 
 
 start
     : calcul EOF; 
     
+whilebloc returns [ String code ]
+@init{ $code = new String(); }
+    : 'while' '(' condition ')' bloc
+        {   
+            String labeldebut = getNewLabel();
+            String labelfin = getNewLabel();
+            $code += "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $bloc.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
+        }
+    ;
+
+
 
 bloc returns [ String code ]  
 @init{ $code = new String(); }
@@ -33,7 +48,9 @@ calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
 
-    :   (bloc { $code += $bloc.code; })*
+    :   (whilebloc { $code += $whilebloc.code; })*
+    
+        (bloc { $code += $bloc.code; })*
     
         (decl { $code += $decl.code; })*
 
@@ -104,8 +121,23 @@ increment returns [ String code ]
     ;
 
 condition returns [ String code]
-    : g=expression op=('=='|'!='|'<'|'<='|'>'|'>=') d=expression
-        {$code = $g.code + $d.code + ($op.text)+ "\n";
+    : a = condition ('&&') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+        } 
+    | a = condition ('||') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+        }
+    | conditionbasique
+        {
+            $code = $conditionbasique.code;
         }
     |'true'
         {$code = "PUSHI 1\n";
@@ -159,6 +191,10 @@ instruction returns [ String code ]
         {
             $code = $bloc.code;
         }
+    | whilebloc
+        {
+            $code = $whilebloc.code;
+        }
     ;
 
 //Parse les expressions (opérations, parenthèses, entiers, variables)
@@ -189,6 +225,41 @@ expression returns [ String code ]
         { 
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
         $code = "PUSHG "+ vi.address + "\n";
+        }
+    ;
+
+conditionbasique returns [ String code ]
+    : a = expression op=('=='|'!='|'<>') b=expression
+        {
+            if($op.text.equals("==")){ $code = $a.code + $b.code + "EQUAL\n";}
+            else {$code = $a.code + $b.code + "NEQ\n";}
+        }
+    | a = expression op=('<'|'>') b=expression
+        {
+            if($op.text.equals("<")){ $code = $a.code + $b.code + "INF\n";}
+            else {$code = $a.code + $b.code + "SUP\n";}
+        }
+    | a = expression op=('<='|'>=') b=expression
+        {
+            if($op.text.equals("<=")){ $code = $a.code + $b.code + "INFEQ\n";}
+            else {$code = $a.code + $b.code + "SUPEQ\n";}
+        }
+    ;
+
+conditionbooleenne returns [ String code ]
+    : a = condition ('&&') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+        }
+    | a = condition ('||') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
         }
     ;
 
