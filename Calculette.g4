@@ -14,7 +14,32 @@ grammar Calculette;
 
 start
     : calcul EOF; 
-    
+
+forbloc returns [ String code ]
+@init{ $code = new String(); }
+    : 'for' '(' debut=assignation ';' condition ';' incr=assignation ')' bloc
+        {
+            String labeldebut = getNewLabel();
+            String labelfin = getNewLabel();
+            $code += $debut.code + "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $bloc.code + $incr.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
+        }
+    ;
+
+branchement returns [ String code ]
+@init{ $code = new String(); }
+    : 'if' '(' condition ')' bloc
+        {
+            String label = getNewLabel();
+            $code += $condition.code + "JUMPF " + label + "\n" + $bloc.code + "LABEL " + label + "\n";
+        }
+    | 'if' '(' condition ')' bloc1=bloc 'else' bloc2=bloc
+        {
+            String label1 = getNewLabel();
+            String label2 = getNewLabel();
+            $code += $condition.code + "JUMPF " + label1 + "\n" + $bloc1.code + "JUMP " + label2 + "\n" + "LABEL " + label1 + "\n" + $bloc2.code + "LABEL " + label2 + "\n";
+        }
+    ;
+
 whilebloc returns [ String code ]
 @init{ $code = new String(); }
     : 'while' '(' condition ')' bloc
@@ -29,8 +54,8 @@ whilebloc returns [ String code ]
 
 bloc returns [ String code ]  
 @init{ $code = new String(); }
-    : '{'
-
+    :   NEWLINE*
+        '{'
         NEWLINE*
 
         (decl { $code += $decl.code; })*
@@ -38,8 +63,7 @@ bloc returns [ String code ]
         (instruction { $code += $instruction.code; })* 
 
         NEWLINE*
-      '}'
-      
+        '}'      
         NEWLINE*
     ;
 
@@ -108,12 +132,7 @@ assignation returns [ String code ]
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = $expression.code + "STOREG " + vi.address + "\n";
         }
-    ;
-
-
-
-increment returns [ String code ]
-    : IDENTIFIANT '+=' expression
+    | IDENTIFIANT '+=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = "PUSHG " + vi.address + "\n" + $expression.code + "ADD\n" + "STOREG " + vi.address + "\n";
@@ -175,10 +194,6 @@ instruction returns [ String code ]
         { 
 		    $code = $assignation.code;
         }
-    | increment finInstruction
-        {
-            $code = $increment.code;
-        }
     | entree finInstruction
         {   
             $code = $entree.code;
@@ -194,6 +209,14 @@ instruction returns [ String code ]
     | whilebloc
         {
             $code = $whilebloc.code;
+        }
+    | branchement
+        {
+            $code = $branchement.code;
+        }
+    | forbloc
+        {
+            $code = $forbloc.code;
         }
     ;
 
