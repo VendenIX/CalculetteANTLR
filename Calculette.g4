@@ -94,8 +94,9 @@ increment returns [ String code ]
     ;
 
 condition returns [ String code]
-    : g=expression op=('=='|'!='|'<'|'<='|'>'|'>=') d=expression
-        {$code = $g.code + $d.code + ($op.text)+ "\n";
+    : conditionbasique
+        {
+            $code = $conditionbasique.code;
         }
     |'true'
         {$code = "PUSHI 1\n";
@@ -183,6 +184,24 @@ expression returns [ String code ]
         { 
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
         $code = "PUSHG "+ vi.address + "\n";
+        }
+    ;
+
+conditionbasique returns [ String code ]
+    : a = expression op=('=='|'!='|'<>') b=expression
+        {
+            if($op.text.equals("==")){ $code = $a.code + $b.code + "EQUAL\n";}
+            else {$code = $a.code + $b.code + "NEQ\n";}
+        }
+    | a = expression op=('<'|'>') b=expression
+        {
+            if($op.text.equals("<")){ $code = $a.code + $b.code + "INF\n";}
+            else {$code = $a.code + $b.code + "SUP\n";}
+        }
+    | a = expression op=('<='|'>=') b=expression
+        {
+            if($op.text.equals("<=")){ $code = $a.code + $b.code + "INFEQ\n";}
+            else {$code = $a.code + $b.code + "SUPEQ\n";}
         }
     ;
 
