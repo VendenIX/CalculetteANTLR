@@ -94,7 +94,21 @@ increment returns [ String code ]
     ;
 
 condition returns [ String code]
-    : conditionbasique
+    : a = condition ('&&') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+        } 
+    | a = condition ('||') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+        }
+    | conditionbasique
         {
             $code = $conditionbasique.code;
         }
@@ -202,6 +216,23 @@ conditionbasique returns [ String code ]
         {
             if($op.text.equals("<=")){ $code = $a.code + $b.code + "INFEQ\n";}
             else {$code = $a.code + $b.code + "SUPEQ\n";}
+        }
+    ;
+
+conditionbooleenne returns [ String code ]
+    : a = condition ('&&') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 0\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+        }
+    | a = condition ('||') b=condition
+        {
+            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
+            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
         }
     ;
 
