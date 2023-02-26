@@ -28,7 +28,7 @@ bloc returns [ String code ]
         NEWLINE*
     ;
 
-
+//Parse un calcul (peut contenir plusieurs blocs et déclarations)
 calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
@@ -45,6 +45,7 @@ calcul returns [ String code ]
     ;
 
 //Parse les déclarations de variables
+/* 
 decl returns [ String code ]
     : TYPE IDENTIFIANT finInstruction
         {
@@ -58,6 +59,30 @@ decl returns [ String code ]
             }
         }
     ;
+*/
+decl returns [String code]
+    : TYPE IDENTIFIANT finInstruction
+        {
+            if ($TYPE.text.equals("int")) {
+                $code = "PUSHI 0\n";
+                tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
+            } else {
+                $code = "PUSHF 0\n";
+                tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
+            }
+        }
+    | TYPE IDENTIFIANT '=' expression finInstruction
+        {
+            if ($TYPE.text.equals("int")) {
+                tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
+                $code = "PUSHI 0 "+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
+            } else {
+                tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
+                $code = "PUSHF 0 "+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
+            }
+        }
+    ;
+
 
 //Parse les assignations de variables
 assignation returns [ String code ] 
@@ -67,6 +92,8 @@ assignation returns [ String code ]
             $code = $expression.code + "STOREG " + vi.address + "\n";
         }
     ;
+
+
 
 increment returns [ String code ]
     : IDENTIFIANT '+=' expression

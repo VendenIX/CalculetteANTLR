@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // Generated from java-escape by ANTLR 4.11.1
-=======
-// Generated from MVaP.g4 by ANTLR 4.12.0
->>>>>>> gireg
 
     import java.util.HashMap;
 
@@ -17,11 +13,7 @@ import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class MVaPLexer extends Lexer {
-<<<<<<< HEAD
 	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
-=======
-	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
->>>>>>> gireg
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =

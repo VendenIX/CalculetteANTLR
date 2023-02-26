@@ -1,16 +1,5 @@
-<<<<<<< HEAD
-PUSHI 12
-PUSHI 3
-MUL
-PUSHI 89
-PUSHI 2
-=======
 PUSHI 0
-PUSHI 5
+PUSHI 2
 STOREG 0
-PUSHG 0
-PUSHI 5
->>>>>>> gireg
-ADD
   HALT
 

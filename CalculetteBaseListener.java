@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // Generated from java-escape by ANTLR 4.11.1
-=======
-// Generated from Calculette.g4 by ANTLR 4.12.0
->>>>>>> gireg
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -27,6 +23,18 @@ public class CalculetteBaseListener implements CalculetteListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStart(CalculetteParser.StartContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBloc(CalculetteParser.BlocContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBloc(CalculetteParser.BlocContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -68,8 +76,18 @@ public class CalculetteBaseListener implements CalculetteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-<<<<<<< HEAD
-=======
+	@Override public void enterIncrement(CalculetteParser.IncrementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIncrement(CalculetteParser.IncrementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCondition(CalculetteParser.ConditionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -82,7 +100,6 @@ public class CalculetteBaseListener implements CalculetteListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
->>>>>>> gireg
 	@Override public void enterEntree(CalculetteParser.EntreeContext ctx) { }
 	/**
 	 * {@inheritDoc}

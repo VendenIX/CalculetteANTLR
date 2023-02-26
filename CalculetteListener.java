@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // Generated from java-escape by ANTLR 4.11.1
-=======
-// Generated from Calculette.g4 by ANTLR 4.12.0
->>>>>>> gireg
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -20,6 +16,16 @@ public interface CalculetteListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStart(CalculetteParser.StartContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#bloc}.
+	 * @param ctx the parse tree
+	 */
+	void enterBloc(CalculetteParser.BlocContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#bloc}.
+	 * @param ctx the parse tree
+	 */
+	void exitBloc(CalculetteParser.BlocContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CalculetteParser#calcul}.
 	 * @param ctx the parse tree
@@ -51,8 +57,16 @@ public interface CalculetteListener extends ParseTreeListener {
 	 */
 	void exitAssignation(CalculetteParser.AssignationContext ctx);
 	/**
-<<<<<<< HEAD
-=======
+	 * Enter a parse tree produced by {@link CalculetteParser#increment}.
+	 * @param ctx the parse tree
+	 */
+	void enterIncrement(CalculetteParser.IncrementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#increment}.
+	 * @param ctx the parse tree
+	 */
+	void exitIncrement(CalculetteParser.IncrementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CalculetteParser#condition}.
 	 * @param ctx the parse tree
 	 */
@@ -63,7 +77,6 @@ public interface CalculetteListener extends ParseTreeListener {
 	 */
 	void exitCondition(CalculetteParser.ConditionContext ctx);
 	/**
->>>>>>> gireg
 	 * Enter a parse tree produced by {@link CalculetteParser#entree}.
 	 * @param ctx the parse tree
 	 */
