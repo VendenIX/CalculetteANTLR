@@ -4,13 +4,28 @@ grammar Calculette;
         }
 
 @members {
-   private TablesSymboles tablesSymboles = new TablesSymboles();
+    private TablesSymboles tablesSymboles = new TablesSymboles();
+    private int _cur_label = 1;
+    /** générateur de nom d'étiquettes pour les boucles, pour whilebloc*/
+    private String getNewLabel() { return "Label" +(_cur_label++); }
+    // ...
         }
 
 
 start
     : calcul EOF; 
     
+whilebloc returns [ String code ]
+@init{ $code = new String(); }
+    : 'while' '(' condition ')' bloc
+        {   
+            String labeldebut = getNewLabel();
+            String labelfin = getNewLabel();
+            $code += "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $bloc.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
+        }
+    ;
+
+
 
 bloc returns [ String code ]  
 @init{ $code = new String(); }
@@ -33,7 +48,9 @@ calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
 
-    :   (bloc { $code += $bloc.code; })*
+    :   (whilebloc { $code += $whilebloc.code; })*
+    
+        (bloc { $code += $bloc.code; })*
     
         (decl { $code += $decl.code; })*
 
@@ -131,6 +148,10 @@ instruction returns [ String code ]
     | bloc
         {
             $code = $bloc.code;
+        }
+    | whilebloc
+        {
+            $code = $whilebloc.code;
         }
     ;
 
