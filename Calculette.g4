@@ -142,6 +142,11 @@ assignation returns [ String code ]
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "ADD\n" + "STOREG " + vi.address + "\n";
         }
+    | IDENTIFIANT '--' finInstruction
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "SUB\n" + "STOREG " + vi.address + "\n";
+        }
     ;
 
 condition returns [ String code]
