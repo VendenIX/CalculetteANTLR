@@ -86,21 +86,6 @@ calcul returns [ String code ]
     ;
 
 //Parse les déclarations de variables
-/* 
-decl returns [ String code ]
-    : TYPE IDENTIFIANT finInstruction
-        {
-            if ($TYPE.text.equals("int")){
-                $code = "PUSHI 0\n";
-                tablesSymboles.addVarDecl($IDENTIFIANT.text,"int");
-            }
-            else {
-                $code = "PUSHI 0\n";
-                tablesSymboles.addVarDecl($IDENTIFIANT.text,"double");
-            }
-        }
-    ;
-*/
 decl returns [String code]
     : TYPE IDENTIFIANT finInstruction
         {
@@ -136,6 +121,26 @@ assignation returns [ String code ]
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = "PUSHG " + vi.address + "\n" + $expression.code + "ADD\n" + "STOREG " + vi.address + "\n";
+        }
+    | IDENTIFIANT '-=' expression
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + $expression.code + "SUB\n" + "STOREG " + vi.address + "\n";
+        }
+    | IDENTIFIANT '*=' expression
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + $expression.code + "MUL\n" + "STOREG " + vi.address + "\n";
+        }
+    | IDENTIFIANT '/=' expression
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + $expression.code + "DIV\n" + "STOREG " + vi.address + "\n";
+        }
+    | IDENTIFIANT '++' finInstruction
+        {
+            VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "ADD\n" + "STOREG " + vi.address + "\n";
         }
     ;
 

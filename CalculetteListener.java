@@ -17,6 +17,36 @@ public interface CalculetteListener extends ParseTreeListener {
 	 */
 	void exitStart(CalculetteParser.StartContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#forbloc}.
+	 * @param ctx the parse tree
+	 */
+	void enterForbloc(CalculetteParser.ForblocContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#forbloc}.
+	 * @param ctx the parse tree
+	 */
+	void exitForbloc(CalculetteParser.ForblocContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#branchement}.
+	 * @param ctx the parse tree
+	 */
+	void enterBranchement(CalculetteParser.BranchementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#branchement}.
+	 * @param ctx the parse tree
+	 */
+	void exitBranchement(CalculetteParser.BranchementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#whilebloc}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhilebloc(CalculetteParser.WhileblocContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#whilebloc}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhilebloc(CalculetteParser.WhileblocContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CalculetteParser#bloc}.
 	 * @param ctx the parse tree
 	 */
@@ -56,16 +86,6 @@ public interface CalculetteListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssignation(CalculetteParser.AssignationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CalculetteParser#increment}.
-	 * @param ctx the parse tree
-	 */
-	void enterIncrement(CalculetteParser.IncrementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CalculetteParser#increment}.
-	 * @param ctx the parse tree
-	 */
-	void exitIncrement(CalculetteParser.IncrementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CalculetteParser#condition}.
 	 * @param ctx the parse tree
@@ -116,6 +136,16 @@ public interface CalculetteListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression(CalculetteParser.ExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CalculetteParser#conditionbasique}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionbasique(CalculetteParser.ConditionbasiqueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CalculetteParser#conditionbasique}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionbasique(CalculetteParser.ConditionbasiqueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CalculetteParser#finInstruction}.
 	 * @param ctx the parse tree
