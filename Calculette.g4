@@ -83,6 +83,23 @@ calcul returns [ String code ]
         (instruction { $code += $instruction.code; })*
 
         { $code += "  HALT\n"; }
+
+    |  //traitement des déclarations de fonctions
+       (decl { $code += $decl.code; })* 
+
+        { $code += "   JUMP Main\n"; }
+
+        NEWLINE*
+
+        (fonction { $code += $fonction.code; })*
+
+        NEWLINE*
+
+        { $code += "LABEL Main\n"; }
+        (instruction { $code += $instruction.code; })*
+
+        { $code += "  HALT\n"; }
+
     ;
 
 //Parse les déclarations de variables
@@ -101,10 +118,10 @@ decl returns [String code]
         {
             if ($TYPE.text.equals("int")) {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
-                $code = "PUSHI 0 "+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
+                $code = "PUSHI 0\n"+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
             } else {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
-                $code = "PUSHF 0 "+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
+                $code = "PUSHF 0\n"+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
             }
         }
     ;
@@ -137,12 +154,12 @@ assignation returns [ String code ]
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = "PUSHG " + vi.address + "\n" + $expression.code + "DIV\n" + "STOREG " + vi.address + "\n";
         }
-    | IDENTIFIANT '++' finInstruction
+    | IDENTIFIANT '++'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "ADD\n" + "STOREG " + vi.address + "\n";
         }
-    | IDENTIFIANT '--' finInstruction
+    | IDENTIFIANT '--'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "SUB\n" + "STOREG " + vi.address + "\n";
@@ -259,6 +276,11 @@ expression returns [ String code ]
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
         $code = "PUSHG "+ vi.address + "\n";
         }
+
+    | IDENTIFIANT '(' ')' //appel de fonction 
+        {
+            $code = "CALL " + $IDENTIFIANT.text + "\n";
+        }
     ;
 
 conditionbasique returns [ String code ]
@@ -279,6 +301,21 @@ conditionbasique returns [ String code ]
         }
     ;
 
+fonction returns [ String code ]
+    //Permet de reconnaître une déclaration de fonction
+    : TYPE IDENTIFIANT  
+        {
+	    //Enregistre le type de la fonction:  
+        tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
+        $code = "LABEL " + $IDENTIFIANT.text + "\n";
+        }
+        '('  ')' bloc 
+        {
+        // corps de la fonction
+        $code = $bloc.code;
+	    $code += "RETURN\n";  //  Return "de sécurité"      
+        }
+    ;
 
 finInstruction : ( NEWLINE | ';' )+ ;
 
