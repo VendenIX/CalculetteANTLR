@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from MVaP.g4 by ANTLR 4.7.2
 
     import java.util.HashMap;
 
@@ -12,7 +12,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
-@SuppressWarnings("CheckReturnValue")
 public class MVaPBaseListener implements MVaPListener {
 	/**
 	 * {@inheritDoc}

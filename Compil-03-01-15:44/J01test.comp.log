@@ -1,0 +1,2 @@
+Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
+line 4:23 no viable alternative at input 'inti\nintx\nx=42\nfor(i=1;i<x;i=i+1)print'

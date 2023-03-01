@@ -1,0 +1,5 @@
+Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
+line 3:6 mismatched input 'int' expecting ')'
+line 3:11 missing '(' at ')'
+line 8:2 mismatched input '4' expecting ')'
+line 8:5 extraneous input ')' expecting {';', NEWLINE}

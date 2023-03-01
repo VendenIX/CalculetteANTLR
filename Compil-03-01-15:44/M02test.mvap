@@ -1,0 +1,20 @@
+PUSHI 0
+PUSHI 0
+   JUMP Main
+LABEL fact
+nullPUSHI 1
+nullnullPUSHI 1
+nullnullPUSHG 0
+nullMUL
+PUSHG 0
+PUSHI 1
+SUB
+RETURN
+LABEL Main
+CALL fact
+STOREG 1
+PUSHG 1
+WRITE
+POP 
+  HALT
+

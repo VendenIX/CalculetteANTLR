@@ -1,0 +1,7 @@
+Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
+line 3:11 mismatched input 'int' expecting ')'
+line 3:16 missing '(' at ')'
+line 5:33 no viable alternative at input 'if((x/i)*i==x)print'
+line 5:27 mismatched input '==' expecting {')', '-', '*', '/', '+'}
+line 7:13 no viable alternative at input 'return0'
+line 10:7 extraneous input 'x' expecting ')'
