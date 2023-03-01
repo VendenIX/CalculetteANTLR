@@ -17,38 +17,32 @@ start
 
 forbloc returns [ String code ]
 @init{ $code = new String(); }
-    : 'for' '(' debut=assignation ';' condition ';' incr=assignation ')' bloc
+    : 'for' '(' debut=assignation ';' condition ';' incr=assignation ')' instruction
         {
             String labeldebut = getNewLabel();
             String labelfin = getNewLabel();
-            $code += $debut.code + "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $bloc.code + $incr.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
+            $code += $debut.code + "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $instruction.code + $incr.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
         }
     ;
 
 branchement returns [ String code ]
 @init{ $code = new String(); }
-    : 'if' '(' condition ')' bloc
+    : 'if' '(' condition ')' instruction
         {
             String label = getNewLabel();
-            $code += $condition.code + "JUMPF " + label + "\n" + $bloc.code + "LABEL " + label + "\n";
+            $code += $condition.code + "JUMPF " + label + "\n" + $instruction.code + "LABEL " + label + "\n";
         }
-    | 'if' '(' condition ')' bloc1=bloc 'else' bloc2=bloc
+    | 'if' '(' condition ')' instr1=instruction 'else' instr2=instruction
         {
             String label1 = getNewLabel();
             String label2 = getNewLabel();
-            $code += $condition.code + "JUMPF " + label1 + "\n" + $bloc1.code + "JUMP " + label2 + "\n" + "LABEL " + label1 + "\n" + $bloc2.code + "LABEL " + label2 + "\n";
+            $code += $condition.code + "JUMPF " + label1 + "\n" + $instr1.code + "JUMP " + label2 + "\n" + "LABEL " + label1 + "\n" + $instr2.code + "LABEL " + label2 + "\n";
         }
     ;
 
 whilebloc returns [ String code ]
 @init{ $code = new String(); }
-    : 'while' '(' condition ')' bloc
-        {   
-            String labeldebut = getNewLabel();
-            String labelfin = getNewLabel();
-            $code += "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $bloc.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
-        }
-    | 'while' '(' condition ')' instruction
+    : 'while' '(' condition ')' instruction
         {   
             String labeldebut = getNewLabel();
             String labelfin = getNewLabel();
@@ -110,7 +104,7 @@ calcul returns [ String code ]
 
 //Parse les déclarations de variables
 decl returns [String code]
-    : TYPE IDENTIFIANT finInstruction
+    : TYPE IDENTIFIANT
         {
             if ($TYPE.text.equals("int")) {
                 $code = "PUSHI 0\n";
@@ -120,7 +114,7 @@ decl returns [String code]
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
             }
         }
-    | TYPE IDENTIFIANT '=' expression finInstruction
+    | TYPE IDENTIFIANT '=' expression
         {
             if ($TYPE.text.equals("int")) {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
@@ -172,20 +166,20 @@ assignation returns [ String code ]
         }
     ;
 
+//à améliorer pour ne pas poursuivre le and et le or lorsque condition de gauche suffit à valider/invalider la condition avec des jumps
 condition returns [ String code]
-    : a = condition ('&&') b=condition
+    : '!' condition
         {
-            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 0\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+            $code= "PUSHI 1\n" + $condition.code + "SUB \n";
+        }
+    
+    | a = condition ('&&') b=condition
+        {
+            $code= $a.code + $b.code + "MUL \n";
         } 
     | a = condition ('||') b=condition
         {
-            if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 1\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 1\n")){ $code = "PUSHI 1\n";}
-            else if($a.code.equals("PUSHI 0\n") && $b.code.equals("PUSHI 0\n")){ $code = "PUSHI 0\n";}
+            $code = $a.code + $b.code + "ADD \n PUSHI 1\n SUPEQ \n";
         }
     | conditionbasique
         {
@@ -234,6 +228,10 @@ instruction returns [ String code ]
     | sortie finInstruction
         {
             $code= $sortie.code;
+        }
+    | decl finInstruction
+        {
+            $code = $decl.code;
         }
     | bloc
         {
