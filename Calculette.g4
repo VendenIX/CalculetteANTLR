@@ -311,12 +311,12 @@ fonction returns [ String code ]
         {
 	    //Enregistre le type de la fonction:  
         tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
-        $code = "LABEL " + $IDENTIFIANT.text + "\n";
+        $code = "PUSHI 0\nLABEL " + $IDENTIFIANT.text + "\n";
         }
         '('  ')' bloc 
         {
         // corps de la fonction
-        $code = $bloc.code;
+        $code += $bloc.code;
 	    $code += "RETURN\n";  //  Return "de sécurité"      
         }
     ;
