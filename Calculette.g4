@@ -283,7 +283,7 @@ expression returns [ String code ]
 
     | IDENTIFIANT '(' ')' //appel de fonction 
         {
-            $code = "CALL " + $IDENTIFIANT.text + "\n";
+            $code = "PUSHI 0\nCALL " + $IDENTIFIANT.text + "\n";
         }
     ;
 
@@ -316,7 +316,7 @@ fonction returns [ String code ]
         '('  ')' bloc 
         {
         // corps de la fonction
-        $code = $bloc.code;
+        $code += $bloc.code;
 	    $code += "RETURN\n";  //  Return "de sécurité"      
         }
     ;

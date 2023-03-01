@@ -1,0 +1,5 @@
+Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
+line 3:7 mismatched input 'int' expecting ')'
+line 3:12 missing '(' at ')'
+## Erreur : la variable "y" n'existe pas
+Problems calling org.antlr.v4.gui.TestRig.main(args)

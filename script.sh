@@ -1,4 +1,4 @@
-#export CLASSPATH=.:"/usr/share/java/*":$CLASSPATH
+export CLASSPATH=.:"/usr/share/java/*":$CLASSPATH
 java org.antlr.v4.Tool Calculette.g4 
 java org.antlr.v4.Tool MVaP.g4 
 javac *.java

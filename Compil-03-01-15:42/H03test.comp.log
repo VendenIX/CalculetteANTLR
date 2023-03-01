@@ -1,0 +1,2 @@
+Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
+line 3:27 no viable alternative at input 'inti\ninput(i)\nif(i<10&&i<100||i>5)print'
