@@ -48,6 +48,12 @@ whilebloc returns [ String code ]
             String labelfin = getNewLabel();
             $code += "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $bloc.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
         }
+    | 'while' '(' condition ')' instruction
+        {   
+            String labeldebut = getNewLabel();
+            String labelfin = getNewLabel();
+            $code += "LABEL "+ labeldebut +"\n"+ $condition.code + "JUMPF "+ labelfin + "\n" + $instruction.code + "JUMP "+labeldebut+ "\n"+ "LABEL "+ labelfin + "\n";
+        }
     ;
 
 
