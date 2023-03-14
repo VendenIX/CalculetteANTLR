@@ -286,7 +286,7 @@ expression returns [ String code ]
     | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
         {
             //ajouter ici le nettoyage de la pile
-            $code = $args.code + PUSHI " + $args.size + "\nCALL " + $IDENTIFIANT.text + "\n";
+            $code = $args.code + "PUSHI " + $args.size + "\nCALL " + $IDENTIFIANT.text + "\n";
         }
     ;
 
@@ -336,7 +336,7 @@ fonction returns [ String code ]
         {
             // corps de la fonction
             $code += $bloc.code;
-            $code += "RETURN\n";  //  Return "de sécurité"      
+            $code += "RETURN\n";   
         }
     ;
 
@@ -370,7 +370,7 @@ args returns [String code, int size]
         }
       ( ',' expression
         {
-            $code +=expression;
+            $code += $expression.code;
             $size++;
         }
       )*
