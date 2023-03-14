@@ -1,2 +1,0 @@
-Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
-line 5:12 no viable alternative at input 'intx\ninty=0\nintz=1\ninput(x)\nif(x==0)print'

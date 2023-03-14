@@ -1,2 +1,0 @@
-Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
-line 1:0 mismatched input '/' expecting {<EOF>, 'for', '(', 'if', 'while', '{', 'input', 'print', '-', NEWLINE, ENTIER, TYPE, IDENTIFIANT}

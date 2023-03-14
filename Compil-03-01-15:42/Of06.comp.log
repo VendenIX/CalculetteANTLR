@@ -1,6 +1,0 @@
-Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
-line 5:16 mismatched input 'double' expecting ')'
-line 5:26 mismatched input 'int' expecting '('
-line 5:34 missing '(' at ')'
-## Erreur : la variable "s" n'existe pas
-Problems calling org.antlr.v4.gui.TestRig.main(args)
