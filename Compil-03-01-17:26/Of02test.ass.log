@@ -1,0 +1,9 @@
+line 1:6 mismatched input '0' expecting FLOAT
+Exception in thread "main" java.lang.NullPointerException
+	at MVaPAssemblerListener.enterInstr2f(MVaPAssemblerListener.java:92)
+	at MVaPParser$Instr2fContext.enterRule(MVaPParser.java:550)
+	at org.antlr.v4.runtime.tree.ParseTreeWalker.enterRule(ParseTreeWalker.java:42)
+	at org.antlr.v4.runtime.tree.ParseTreeWalker.walk(ParseTreeWalker.java:25)
+	at org.antlr.v4.runtime.tree.ParseTreeWalker.walk(ParseTreeWalker.java:28)
+	at org.antlr.v4.runtime.tree.ParseTreeWalker.walk(ParseTreeWalker.java:28)
+	at MVaPAssembler.main(MVaPAssembler.java:37)

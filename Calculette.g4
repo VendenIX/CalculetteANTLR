@@ -1,8 +1,5 @@
 grammar Calculette;
 
-@headers {
-        }
-
 @members {
     private TablesSymboles tablesSymboles = new TablesSymboles();
     private int _cur_label = 1;
@@ -283,7 +280,19 @@ expression returns [ String code ]
 
     | IDENTIFIANT '(' ')' //appel de fonction 
         {
-            $code = "CALL " + $IDENTIFIANT.text + "\n";
+            $code = "PUSHI 0\nCALL " + $IDENTIFIANT.text + "\n";
+        }
+
+    | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
+        {
+            //ajouter ici le nettoyage de la pile
+            $code = $args.code + "PUSHI " + $args.size + "\nCALL " + $IDENTIFIANT.text + "\n";
+        }
+
+    | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
+        {
+            //ajouter ici le nettoyage de la pile
+            $code = $args.code + "PUSHI " + $args.size + "\nCALL " + $IDENTIFIANT.text + "\n";
         }
     ;
 
@@ -306,19 +315,72 @@ conditionbasique returns [ String code ]
     ;
 
 fonction returns [ String code ]
+@init{ tablesSymboles.enterFunction();}
+@after{ tablesSymboles.exitFunction();}
     //Permet de reconnaître une déclaration de fonction
     : TYPE IDENTIFIANT  
         {
-	    //Enregistre le type de la fonction:  
-        tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
-        $code = "PUSHI 0\nLABEL " + $IDENTIFIANT.text + "\n";
+            //Enregistre le type de la fonction:  
+            tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
+            $code = "LABEL " + $IDENTIFIANT.text + "\n";
         }
-        '('  ')' bloc 
+            '('  ')' bloc 
         {
-        // corps de la fonction
-        $code += $bloc.code;
-	    $code += "RETURN\n";  //  Return "de sécurité"      
+            // corps de la fonction
+            $code += $bloc.code;
+            $code += "RETURN\n";  //  Return "de sécurité"      
         }
+    //Permet de reconnaître une déclaration de fonction avec un ou plusieurs paramètres
+    | TYPE IDENTIFIANT '(' params ? ')'
+        {
+            //Enregistre le type de la fonction:  
+            tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
+
+            $code = "LABEL " + $IDENTIFIANT.text + "\n";
+        }
+            '('  ')' bloc 
+        {
+            // corps de la fonction
+            $code += $bloc.code;
+            $code += "RETURN\n";   
+        }
+    ;
+
+//Permet de reconnaître les paramètres
+params
+    : TYPE IDENTIFIANT
+        {
+            //code java gérant une variable locale (arg0)
+            // quand tu as un seul argument
+            //tablesSymboles.addVarDecl($IDENTIFIANT.text, $TYPE.text);
+            tablesSymboles.addParam($IDENTIFIANT.text, $TYPE.text);
+        }
+        ( ',' TYPE IDENTIFIANT
+            {
+                // code java gérant une variable locale (argi)
+                // quand t'en as un autre, ou plusieurs autres
+                //tablesSymboles.addVarDecl($IDENTIFIANT.text, $TYPE.text);
+                tablesSymboles.addParam($IDENTIFIANT.text, $TYPE.text);
+            }
+        )*
+    ;
+
+//size correspond au nombre d'arguments
+//Permet de passer un argument passé à une fonction
+args returns [String code, int size]
+@init{ $code = new String(); $size = 0;}
+    : ( expression
+        {
+            $code += $expression.code;
+            $size++;
+        }
+      ( ',' expression
+        {
+            $code += $expression.code;
+            $size++;
+        }
+      )*
+    )?
     ;
 
 finInstruction : ( NEWLINE | ';' )+ ;
@@ -387,3 +449,4 @@ UNMATCH : . -> skip ;
         PUSHSP: met l'adresse du sommet de la pile sur la pile
         PUSHFP: met l'adresse du début de la pile de la fonction sur la pile
  */
+

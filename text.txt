@@ -1,0 +1,11 @@
+int x = 5
+
+int f() {
+	print(69888)
+}
+
+f()
+
+print(x)
+
+
