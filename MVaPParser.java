@@ -121,6 +121,7 @@ public class MVaPParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class ProgramContext extends ParserRuleContext {
 		public List<InstrContext> instr() {
 			return getRuleContexts(InstrContext.class);
