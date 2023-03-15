@@ -1,16 +1,16 @@
 grammar Calculette;
 
-@headers {
-        }
-
 @members {
     private TablesSymboles tablesSymboles = new TablesSymboles();
     private int _cur_label = 1;
     /** générateur de nom d'étiquettes pour les boucles, pour whilebloc*/
     private String getNewLabel() { return "Label" +(_cur_label++); }
     // ...
+    private String getScope(VariableInfo vi) {
+        if (vi.scope == VariableInfo.Scope.GLOBAL){ return "G ";}
+        else{ return "L ";}
+    }
         }
-
 
 start
     : calcul EOF; 
@@ -72,39 +72,21 @@ calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
 
-    :   (whilebloc { $code += $whilebloc.code; })*
-    
-        (bloc { $code += $bloc.code; })*
-    
-        (decl { $code += $decl.code; })*
-
-        NEWLINE*
-
-        (instruction { $code += $instruction.code; })*
-
-        { $code += "  HALT\n"; }
-
-    |  //traitement des déclarations de fonctions
-       (decl { $code += $decl.code; })* 
-
+    :   (decl { $code += $decl.code; })*
         { $code += "   JUMP Main\n"; }
-
         NEWLINE*
-
         (fonction { $code += $fonction.code; })*
-
         NEWLINE*
 
         { $code += "LABEL Main\n"; }
         (instruction { $code += $instruction.code; })*
-
+        NEWLINE*
         { $code += "  HALT\n"; }
-
     ;
 
 //Parse les déclarations de variables
 decl returns [String code]
-    : TYPE IDENTIFIANT
+    : TYPE IDENTIFIANT finInstruction
         {
             if ($TYPE.text.equals("int")) {
                 $code = "PUSHI 0\n";
@@ -114,55 +96,57 @@ decl returns [String code]
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
             }
         }
-    | TYPE IDENTIFIANT '=' expression
+    | TYPE IDENTIFIANT '=' expression finInstruction
         {
             if ($TYPE.text.equals("int")) {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
-                $code = "PUSHI 0\n"+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
+                VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+                $code = "PUSHI 0\n"+ $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
             } else {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
-                $code = "PUSHF 0\n"+ $expression.code + "STOREG " + tablesSymboles.getVar($IDENTIFIANT.text).address + "\n";
+                VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+                $code = "PUSHF 0\n"+ $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     ;
 
 
 //Parse les assignations de variables
-assignation returns [ String code ] 
+assignation returns [ String code ]
     : IDENTIFIANT '=' expression
         {  
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = $expression.code + "STOREG " + vi.address + "\n";
+            $code = $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '+=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHG " + vi.address + "\n" + $expression.code + "ADD\n" + "STOREG " + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '-=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHG " + vi.address + "\n" + $expression.code + "SUB\n" + "STOREG " + vi.address + "\n";
+            $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '*=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHG " + vi.address + "\n" + $expression.code + "MUL\n" + "STOREG " + vi.address + "\n";
+            $code = "PUSH"+ getScope(vi) + "\n" + $expression.code + "MUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '/=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHG " + vi.address + "\n" + $expression.code + "DIV\n" + "STOREG " + vi.address + "\n";
+            $code = "PUSH"+ getScope(vi) + "\n" + $expression.code + "DIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '++'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "ADD\n" + "STOREG " + vi.address + "\n";
+            $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '--'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSHG " + vi.address + "\n" + "PUSHI 1\n" + "SUB\n" + "STOREG " + vi.address + "\n";
+            $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     ;
 
@@ -198,7 +182,7 @@ entree returns [ String code ]
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             if (vi.type == "int"){
-                $code = "READ\n" + "STOREG " + vi.address + "\n";
+                $code = "READ\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     ;
@@ -229,7 +213,7 @@ instruction returns [ String code ]
         {
             $code= $sortie.code;
         }
-    | decl finInstruction
+    | decl 
         {
             $code = $decl.code;
         }
@@ -237,7 +221,7 @@ instruction returns [ String code ]
         {
             $code = $bloc.code;
         }
-    | whilebloc
+    | whilebloc 
         {
             $code = $whilebloc.code;
         }
@@ -248,6 +232,15 @@ instruction returns [ String code ]
     | forbloc
         {
             $code = $forbloc.code;
+        }
+    | fonction
+        {
+            $code = $fonction.code;
+        }
+    | RETURN expression finInstruction
+        {   
+            VariableInfo vi = tablesSymboles.getReturn();
+            $code = $expression.code + "STOREL "+ vi.address+"\n";
         }
     ;
 
@@ -278,13 +271,20 @@ expression returns [ String code ]
     | IDENTIFIANT 
         { 
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
-        $code = "PUSHG "+ vi.address + "\n";
+        $code = "PUSH"+ getScope(vi)+ vi.address + "\n";
         }
 
-    | IDENTIFIANT '(' ')' //appel de fonction 
+    | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
         {
-            $code = "CALL " + $IDENTIFIANT.text + "\n";
+            //ajouter ici le nettoyage de la pile 
+            $code = "PUSHI 0\n"; //output de la fonction
+            $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
+            for (int i = $args.size; i > 0; i--){
+                $code += "POP \n";
+            }
+
         }
+
     ;
 
 conditionbasique returns [ String code ]
@@ -306,19 +306,61 @@ conditionbasique returns [ String code ]
     ;
 
 fonction returns [ String code ]
+@init{ tablesSymboles.enterFunction();}
+@after{ tablesSymboles.exitFunction();}
     //Permet de reconnaître une déclaration de fonction
-    : TYPE IDENTIFIANT  
+    : TYPE IDENTIFIANT '(' params ? ')'
         {
-	    //Enregistre le type de la fonction:  
-        tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
-        $code = "PUSHI 0\nLABEL " + $IDENTIFIANT.text + "\n";
+            //Enregistre le type de la fonction:  
+            tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
+
+            $code = "LABEL " + $IDENTIFIANT.text + "\n";
         }
-        '('  ')' bloc 
+            bloc 
         {
-        // corps de la fonction
-        $code += $bloc.code;
-	    $code += "RETURN\n";  //  Return "de sécurité"      
+            // corps de la fonction
+            $code += $bloc.code;
+            $code += "RETURN\n";   
         }
+    ;
+
+//Permet de reconnaître les paramètres
+params
+    : (TYPE IDENTIFIANT
+        {
+            //code java gérant une variable locale (arg0)
+            // quand tu as un seul argument
+            //tablesSymboles.addVarDecl($IDENTIFIANT.text, $TYPE.text);
+            tablesSymboles.addParam($IDENTIFIANT.text, $TYPE.text);
+
+        }
+        ( ',' TYPE IDENTIFIANT
+            {
+                // code java gérant une variable locale (argi)
+                // quand t'en as un autre, ou plusieurs autres
+                //tablesSymboles.addVarDecl($IDENTIFIANT.text, $TYPE.text);
+                tablesSymboles.addParam($IDENTIFIANT.text, $TYPE.text);
+            }
+        )*
+    )
+    ;
+
+//size correspond au nombre d'arguments
+//Permet de passer un argument passé à une fonction
+args returns [String code, int size]
+@init{ $code = new String(); $size = 0;}
+    : ( expression
+        {
+            $code += $expression.code;
+            $size++;
+        }
+      ( ',' expression
+        {
+            $code += $expression.code;
+            $size++;
+        }
+      )*
+    )?
     ;
 
 finInstruction : ( NEWLINE | ';' )+ ;
@@ -339,6 +381,8 @@ TYPE : 'int' | 'double' ;
 MOTCLE
     :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws' | 'print' | 'input'
     ;
+
+RETURN: 'return';
 
 IDENTIFIANT
     :   ('a'..'z' | 'A'..'Z' | '_')('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
@@ -387,3 +431,4 @@ UNMATCH : . -> skip ;
         PUSHSP: met l'adresse du sommet de la pile sur la pile
         PUSHFP: met l'adresse du début de la pile de la fonction sur la pile
  */
+
