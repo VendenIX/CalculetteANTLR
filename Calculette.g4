@@ -75,7 +75,6 @@ calcul returns [ String code ]
     :   (decl { $code += $decl.code; })*
         { $code += "   JUMP Main\n"; }
         NEWLINE*
-
         (fonction { $code += $fonction.code; })*
         NEWLINE*
 
@@ -87,7 +86,7 @@ calcul returns [ String code ]
 
 //Parse les déclarations de variables
 decl returns [String code]
-    : TYPE IDENTIFIANT
+    : TYPE IDENTIFIANT finInstruction
         {
             if ($TYPE.text.equals("int")) {
                 $code = "PUSHI 0\n";
@@ -97,7 +96,7 @@ decl returns [String code]
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
             }
         }
-    | TYPE IDENTIFIANT '=' expression
+    | TYPE IDENTIFIANT '=' expression finInstruction
         {
             if ($TYPE.text.equals("int")) {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
@@ -214,7 +213,7 @@ instruction returns [ String code ]
         {
             $code= $sortie.code;
         }
-    | decl finInstruction
+    | decl 
         {
             $code = $decl.code;
         }
@@ -237,6 +236,11 @@ instruction returns [ String code ]
     | fonction
         {
             $code = $fonction.code;
+        }
+    | RETURN expression finInstruction
+        {   
+            VariableInfo vi = tablesSymboles.getReturn();
+            $code = $expression.code + "STOREL "+ vi.address+"\n";
         }
     ;
 
@@ -377,6 +381,8 @@ TYPE : 'int' | 'double' ;
 MOTCLE
     :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws' | 'print' | 'input'
     ;
+
+RETURN: 'return';
 
 IDENTIFIANT
     :   ('a'..'z' | 'A'..'Z' | '_')('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
