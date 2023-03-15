@@ -234,6 +234,10 @@ instruction returns [ String code ]
         {
             $code = $forbloc.code;
         }
+    | fonction
+        {
+            $code = $fonction.code;
+        }
     ;
 
 //Parse les expressions (opérations, parenthèses, entiers, variables)
@@ -268,8 +272,9 @@ expression returns [ String code ]
 
     | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
         {
-            //ajouter ici le nettoyage de la pile
-            $code = "PUSHI 0\n" + $args.code + "CALL " + $IDENTIFIANT.text + "\n";
+            //ajouter ici le nettoyage de la pile 
+            $code = "PUSHI 0\n"; //output de la fonction
+            $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
             for (int i = $args.size; i > 0; i--){
                 $code += "POP \n";
             }
@@ -300,20 +305,7 @@ fonction returns [ String code ]
 @init{ tablesSymboles.enterFunction();}
 @after{ tablesSymboles.exitFunction();}
     //Permet de reconnaître une déclaration de fonction
-    : TYPE IDENTIFIANT  
-        {
-            //Enregistre le type de la fonction:  
-            tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
-            $code = "LABEL " + $IDENTIFIANT.text + "\n";
-        }
-            '('  ')' bloc 
-        {
-            // corps de la fonction
-            $code += $bloc.code;
-            $code += "RETURN\n";  //  Return "de sécurité"      
-        }
-    //Permet de reconnaître une déclaration de fonction avec un ou plusieurs paramètres
-    | TYPE IDENTIFIANT '(' params ')'
+    : TYPE IDENTIFIANT '(' params ? ')'
         {
             //Enregistre le type de la fonction:  
             tablesSymboles.addFunction($IDENTIFIANT.text, $TYPE.text);
@@ -346,7 +338,7 @@ params
                 tablesSymboles.addParam($IDENTIFIANT.text, $TYPE.text);
             }
         )*
-    )?
+    )
     ;
 
 //size correspond au nombre d'arguments
