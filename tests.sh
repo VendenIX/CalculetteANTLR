@@ -1,7 +1,8 @@
 #! /bin/bash
 
 # prefixe (répertoire de travail)
-PREF_COR="${PREF_COR:-./tp-compil-autocor/BMs}"
+repertoire=$(pwd)
+PREF_COR="${PREF_COR:-$repertoire/tp-compil-autocor/BMs}"
 # rep qui contient les benchs calculette.
 CALC_FOLDER=calcs
 # rep qui contient les traces attendues
@@ -12,7 +13,7 @@ READS_FOLDER=reads
 # mon chemin antlr
 ANTLR_JAR="/usr/share/java/*"
 # mon chemain MVàP
-MVAP_JAR="${MVAP_JAR:-./tp-compil-autocor/MVaP.jar}"
+MVAP_JAR="${MVAP_JAR:-$repertoire/tp-compil-autocor/MVaP.jar}"
 # point d'entrée de la grammaire.
 ENTRY=start
 
