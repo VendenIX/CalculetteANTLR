@@ -72,34 +72,17 @@ calcul returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour l'utiliser comme accumulateur 
 @after{ System.out.println($code); } // On affiche l’ensemble du code produit
 
-    :   (whilebloc { $code += $whilebloc.code; })* // a remetrre ds instruction
-    
-        (bloc { $code += $bloc.code; })*
-    
-        (decl { $code += $decl.code; })*
-
-        NEWLINE*
-
-        (instruction { $code += $instruction.code; })*
-
-        { $code += "  HALT\n"; }
-
-    |  //traitement des déclarations de fonctions
-        (decl { $code += $decl.code; })* 
-
+    :   (decl { $code += $decl.code; })*
         { $code += "   JUMP Main\n"; }
-
         NEWLINE*
 
         (fonction { $code += $fonction.code; })*
-
         NEWLINE*
 
         { $code += "LABEL Main\n"; }
         (instruction { $code += $instruction.code; })*
-
+        NEWLINE*
         { $code += "  HALT\n"; }
-
     ;
 
 //Parse les déclarations de variables
@@ -239,7 +222,7 @@ instruction returns [ String code ]
         {
             $code = $bloc.code;
         }
-    | whilebloc
+    | whilebloc 
         {
             $code = $whilebloc.code;
         }
@@ -282,11 +265,6 @@ expression returns [ String code ]
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
         $code = "PUSH "+ vi.address + "\n";
         }
-
-    // | IDENTIFIANT '(' ')' //appel de fonction 
-    //     {
-    //         $code = "PUSHI 0\nCALL " + $IDENTIFIANT.text + "\n";
-    //     }
 
     | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
         {
