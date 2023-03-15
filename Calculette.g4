@@ -263,7 +263,7 @@ expression returns [ String code ]
     | IDENTIFIANT 
         { 
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
-        $code = "PUSH "+ vi.address + "\n";
+        $code = "PUSH"+ getScope(vi)+ vi.address + "\n";
         }
 
     | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
