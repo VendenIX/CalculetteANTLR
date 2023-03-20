@@ -183,6 +183,10 @@ entree returns [ String code ]
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             if (vi.type == "int"){
                 $code = "READ\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else if (vi.type == "double") {
+                $code = "READF\n" + "STORE" + getScope(vi) + vi.address + "\n";
+            } else {
+                $code = "";
             }
         }
     ;
@@ -191,8 +195,16 @@ entree returns [ String code ]
 sortie returns [ String code ] 
     : 'print' '(' expression ')'
         {
-           $code = $expression.code +"WRITE\nPOP \n";
+            VariableInfo vi = tablesSymboles.getVar($expression.text);
+            if (vi.type == "int"){
+            $code = $expression.code +"WRITE\nPOP \n";
+            } else if (vi.type == "double") {
+                $code = $expression.code + "WRITEF\n";
+            } else {
+                $code = "";
+            }
         }
+
     ;
 
 //Parse les instructions (assignations, entrées, sorties, expressions)
