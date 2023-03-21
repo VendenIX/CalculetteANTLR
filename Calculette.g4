@@ -279,7 +279,7 @@ instruction returns [ String code ]
     | RETURN expression finInstruction
         {   
             VariableInfo vi = tablesSymboles.getReturn();
-            $code = $expression.code + "STOREL "+ vi.address+"\n";
+            $code = $expression.code + "STOREL "+ vi.address+"\n"+"RETURN\n";
         }
     ;
 
