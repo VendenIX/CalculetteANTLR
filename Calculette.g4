@@ -127,7 +127,7 @@ assignation returns [ String code , String type]
             if ($type != "double"){
                 $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "ADDF\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "FADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '-=' expression
@@ -137,7 +137,7 @@ assignation returns [ String code , String type]
             if ($type != "double"){
                 $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "SUBF\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '*=' expression
@@ -147,7 +147,7 @@ assignation returns [ String code , String type]
             if ($type != "double"){
                 $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "MUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "MULF\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FMUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '/=' expression
@@ -157,7 +157,7 @@ assignation returns [ String code , String type]
             if ($type != "double"){
                 $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "DIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "DIVF\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FDIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '++'
@@ -167,7 +167,7 @@ assignation returns [ String code , String type]
             if ($type != "double"){
                 $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "ADDF\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "FADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '--'
@@ -177,7 +177,7 @@ assignation returns [ String code , String type]
             if ($type != "double"){
                 $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "SUBF\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+	                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     ;
@@ -299,8 +299,8 @@ expression returns [ String code, String type]
         {   
             if ($a.type == "double" || $b.type == "double"){
                 $type = "double";
-                if($op.text.equals("*")){ $code = $a.code + $b.code + "MULF\n";}
-                else {$code = $a.code + $b.code + "DIVF\n";}
+                if($op.text.equals("*")){ $code = $a.code + $b.code + "FMUL\n";}
+                else {$code = $a.code + $b.code + "FDIV\n";}
             }else{
                 $type = "int";
                 if($op.text.equals("*")){ $code = $a.code + $b.code + "MUL\n";}
@@ -311,8 +311,8 @@ expression returns [ String code, String type]
         {   
             if ($a.type == "double" || $b.type == "double"){
                 $type = "double";
-                if($op.text.equals("+")){ $code = $a.code + $b.code + "ADDF\n";}
-                else {$code = $a.code + $b.code + "SUBF\n";}
+                if($op.text.equals("+")){ $code = $a.code + $b.code + "FADD\n";}
+                else {$code = $a.code + $b.code + "FSUB\n";}
             }else{
                 $type = "int";
                 if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
@@ -438,7 +438,7 @@ NEWLINE : '\r'? '\n'  ;
 
 ENTIER : ('0'..'9')+  ;
 
-FLOTTANT : (ENTIER+ '.' ENTIER+);
+FLOTTANT : (ENTIER+ '.' ENTIER*);
 
 TYPE : 'int' | 'double' ;
 
