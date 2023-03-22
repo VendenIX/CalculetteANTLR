@@ -105,7 +105,7 @@ decl returns [String code]
             }else{
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
                 VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-                $code = "PUSHF 0.0\n"+ $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSHF 0.0\n"+ $expression.code + "STORE"+ getScope(vi) + (vi.address + 1) + "\n"+ "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     ;
@@ -118,66 +118,70 @@ assignation returns [ String code , String type]
         {  
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type = vi.type;
-            $code = $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
+            if (!$type.equals("double")){
+                $code = $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = $expression.code + "STORE"+ getScope(vi) + (vi.address + 1)+ "\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     | IDENTIFIANT '+=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type = vi.type;
-            if ($type != "double"){
+            if (!$type.equals("double")){
                 $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "FADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSH"+ getScope(vi) + (vi.address + 1) + "\n" + $expression.code + "FADD\n" + "STORE"+ getScope(vi) + (vi.address + 1) + "\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '-=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type = vi.type;
-            if ($type != "double"){
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            if (!$type.equals("double")){
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSH"+ getScope(vi) + (vi.address + 1) + "\n" + $expression.code + "FSUB\n" + "STORE"+ getScope(vi) + (vi.address + 1) + "\n"+ "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '*=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type  = vi.type;
-            if ($type != "double"){
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "MUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            if (!$type.equals("double")){
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "FMUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FMUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSH"+ getScope(vi) + (vi.address + 1) + "\n" + $expression.code + "FMUL\n" + "STORE"+ getScope(vi) + (vi.address + 1) + "\n"+ "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '/=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type = vi.type;
-            if ($type != "double"){
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "DIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            if (!$type.equals("double")){
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "DIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FDIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSH"+ getScope(vi) + (vi.address + 1) + "\n" + $expression.code + "FDIV\n" + "STORE"+ getScope(vi) + (vi.address + 1) + "\n"+ "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '++'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type = vi.type;
-            if ($type != "double"){
-                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            if (!$type.equals("double")){
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSHI 1\n" + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "FADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSH"+ getScope(vi) + (vi.address + 1) + "\n"+ "PUSHF 1.0\n" + "FADD\n" + "STORE"+ getScope(vi) + (vi.address + 1) + "\n"+ "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     | IDENTIFIANT '--'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
             $type = vi.type;
-            if ($type != "double"){
+            if (!$type.equals("double")){
                 $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-	                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+	            $code = "PUSH"+ getScope(vi) + vi.address + "\n" + "PUSH"+ getScope(vi) + (vi.address + 1) + "\n"+ "PUSHF 1.0\n" + "FADD\n" + "STORE"+ getScope(vi) + (vi.address + 1) + "\n"+ "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     ;
@@ -213,10 +217,10 @@ entree returns [ String code ]
     : 'input' '(' IDENTIFIANT ')'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            if (vi.type != "double"){
+            if (!vi.type.equals("double")){
                 $code = "READ\n" + "STORE"+ getScope(vi) + vi.address + "\n";
             }else{
-                $code = "READF\n" + "STORE" + getScope(vi) + vi.address + "\n";
+                $code = "READF\n" + "STORE" + getScope(vi) + (vi.address+ 1) + "\n" + "STORE" + getScope(vi) + vi.address + "\n";
             }
         }
     ;
@@ -332,19 +336,32 @@ expression returns [ String code, String type]
     | IDENTIFIANT 
         { 
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-        $type = vi.type;            
-        $code = "PUSH"+ getScope(vi)+ vi.address + "\n";
+        $type = vi.type;
+        if (!$type.equals("double")){
+            $code = "PUSH"+ getScope(vi)+ vi.address + "\n";
+        }else{
+            $code = "PUSH"+ getScope(vi)+ vi.address + "\n" + "PUSH"+ getScope(vi)+ (vi.address + 1)+ "\n";
+        }
         }
 
     | IDENTIFIANT '(' args ')' //appel de fonction avec arguments
         {
             //ajouter ici le nettoyage de la pile 
-            $code = "PUSHI 0\n"; //output de la fonction
-            $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
-            for (int i = $args.size; i > 0; i--){
+            String functionType = tablesSymboles.getFunction($IDENTIFIANT.text);
+            $type = functionType;
+            if (!$type.equals("double")){
+                $code = "PUSHI 0\n"; //output de la fonction
+                $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
+                for (int i = $args.size; i > 0; i--){
                 $code += "POP \n";
+                }
+            }else{
+                $code = "PUSHI 0\nPUSHI 0\n"; //output de la fonction
+                $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
+                for (int i = $args.size; i > 0; i--){
+                $code += "POP \nPOP \n";
+                }
             }
-
         }
 
     ;
@@ -382,7 +399,7 @@ fonction returns [ String code ]
         {
             // corps de la fonction
             $code += $bloc.code;
-            $code += "RETURN\n";   
+            $code += "RETURN\n";
         }
     ;
 
@@ -438,13 +455,9 @@ NEWLINE : '\r'? '\n'  ;
 
 ENTIER : ('0'..'9')+  ;
 
-FLOTTANT : (ENTIER+ '.' ENTIER*);
+FLOTTANT : (ENTIER '.' ENTIER*);
 
 TYPE : 'int' | 'double' ;
-
-MOTCLE
-    :  'break' | 'class' | 'else' | 'if' | 'import' | 'public' | 'static' | 'throws' | 'print' | 'input'
-    ;
 
 RETURN: 'return';
 
