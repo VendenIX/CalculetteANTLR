@@ -283,7 +283,11 @@ instruction returns [ String code ]
     | RETURN expression finInstruction
         {   
             VariableInfo vi = tablesSymboles.getReturn();
-            $code = $expression.code + "STOREL "+ vi.address+"\n"+"RETURN\n";
+            if (!$expression.type.equals("double")){
+                $code = $expression.code + "STOREL "+ vi.address+"\n"+"RETURN\n";
+            }else{
+                $code = $expression.code + "STOREL "+ (vi.address + 1)+ "\n" + "STOREL "+ vi.address +"\n"+"RETURN\n";
+            }
         }
     ;
 
@@ -352,15 +356,12 @@ expression returns [ String code, String type]
             if (!$type.equals("double")){
                 $code = "PUSHI 0\n"; //output de la fonction
                 $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
-                for (int i = $args.size; i > 0; i--){
-                $code += "POP \n";
-                }
             }else{
                 $code = "PUSHI 0\nPUSHI 0\n"; //output de la fonction
                 $code+= $args.code + "CALL " + $IDENTIFIANT.text + "\n";
-                for (int i = $args.size; i > 0; i--){
-                $code += "POP \nPOP \n";
-                }
+            }
+            for (int i = $args.size; i > 0; i--){
+                $code += "POP \n";
             }
         }
 
