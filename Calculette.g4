@@ -88,65 +88,97 @@ calcul returns [ String code ]
 decl returns [String code]
     : TYPE IDENTIFIANT finInstruction
         {
-            if ($TYPE.text.equals("int")) {
+            if (!$TYPE.text.equals("double")) {
                 $code = "PUSHI 0\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
-            } else {
-                $code = "PUSHF 0\n";
+            }else{
+                $code = "PUSHF 0.0\n";
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
             }
         }
     | TYPE IDENTIFIANT '=' expression finInstruction
         {
-            if ($TYPE.text.equals("int")) {
+            if (!$TYPE.text.equals("double")) {
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "int");
                 VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
                 $code = "PUSHI 0\n"+ $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
-            } else {
+            }else{
                 tablesSymboles.addVarDecl($IDENTIFIANT.text, "double");
                 VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-                $code = "PUSHF 0\n"+ $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
+                $code = "PUSHF 0.0\n"+ $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
             }
         }
     ;
 
 
 //Parse les assignations de variables
-assignation returns [ String code ]
+assignation returns [ String code , String type]
+@init{ $type = "int"; }
     : IDENTIFIANT '=' expression
         {  
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $type = vi.type;
             $code = $expression.code + "STORE"+ getScope(vi) + vi.address + "\n";
         }
     | IDENTIFIANT '+=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+            $type = vi.type;
+            if ($type != "double"){
                 $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = "PUSH"+ getScope(vi) + vi.address + "\n" + $expression.code + "FADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     | IDENTIFIANT '-=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            $type = vi.type;
+            if ($type != "double"){
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     | IDENTIFIANT '*=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSH"+ getScope(vi) + "\n" + $expression.code + "MUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            $type  = vi.type;
+            if ($type != "double"){
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "MUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FMUL\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     | IDENTIFIANT '/=' expression
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSH"+ getScope(vi) + "\n" + $expression.code + "DIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            $type = vi.type;
+            if ($type != "double"){
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "DIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = "PUSH"+ getScope(vi)  + "\n" + $expression.code + "FDIV\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     | IDENTIFIANT '++'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            $type = vi.type;
+            if ($type != "double"){
+                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "ADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "FADD\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     | IDENTIFIANT '--'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            $type = vi.type;
+            if ($type != "double"){
+                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHI 1\n" + "SUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+	                $code = "PUSH"+ getScope(vi)  + "\n" + "PUSHF 1.0\n" + "FSUB\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }
         }
     ;
 
@@ -181,8 +213,10 @@ entree returns [ String code ]
     : 'input' '(' IDENTIFIANT ')'
         {
             VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
-            if (vi.type == "int"){
+            if (vi.type != "double"){
                 $code = "READ\n" + "STORE"+ getScope(vi) + vi.address + "\n";
+            }else{
+                $code = "READF\n" + "STORE" + getScope(vi) + vi.address + "\n";
             }
         }
     ;
@@ -191,8 +225,13 @@ entree returns [ String code ]
 sortie returns [ String code ] 
     : 'print' '(' expression ')'
         {
-           $code = $expression.code +"WRITE\nPOP \n";
+            if ($expression.type != "double"){
+                $code = $expression.code +"WRITE\nPOP \n";
+            } else {
+                $code = $expression.code + "WRITEF\nPOP \n";
+            }
         }
+
     ;
 
 //Parse les instructions (assignations, entrées, sorties, expressions)
@@ -240,37 +279,60 @@ instruction returns [ String code ]
     | RETURN expression finInstruction
         {   
             VariableInfo vi = tablesSymboles.getReturn();
-            $code = $expression.code + "STOREL "+ vi.address+"\n";
+            $code = $expression.code + "STOREL "+ vi.address+"\n"+"RETURN\n";
         }
     ;
 
 //Parse les expressions (opérations, parenthèses, entiers, variables)
-expression returns [ String code ]
+expression returns [ String code, String type]
+    @init { $type = "int";}
     : '(' c=expression ')'
         {
             $code = $c.code;
+            $type = $c.type;
         }
     | '-' d=expression 
         {
             $code = "PUSHI 0\n"+ $d.code + "SUB\n";
         }
     | a = expression op=('*'|'/') b=expression
-        {
-            if($op.text.equals("*")){ $code = $a.code + $b.code + "MUL\n";}
-            else {$code = $a.code + $b.code + "DIV\n";}
+        {   
+            if ($a.type == "double" || $b.type == "double"){
+                $type = "double";
+                if($op.text.equals("*")){ $code = $a.code + $b.code + "FMUL\n";}
+                else {$code = $a.code + $b.code + "FDIV\n";}
+            }else{
+                $type = "int";
+                if($op.text.equals("*")){ $code = $a.code + $b.code + "MUL\n";}
+                else {$code = $a.code + $b.code + "DIV\n";}
+            }
         }
     | a = expression op=('+'|'-') b=expression
+        {   
+            if ($a.type == "double" || $b.type == "double"){
+                $type = "double";
+                if($op.text.equals("+")){ $code = $a.code + $b.code + "FADD\n";}
+                else {$code = $a.code + $b.code + "FSUB\n";}
+            }else{
+                $type = "int";
+                if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
+                else {$code = $a.code + $b.code + "SUB\n";}
+            }
+        }
+    | FLOTTANT
         {
-            if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
-            else {$code = $a.code + $b.code + "SUB\n";}
+            $type = "double";
+            $code = "PUSHF " + $FLOTTANT.text + "\n";
         }
     | ENTIER
         {
             $code = "PUSHI " + $ENTIER.text + "\n";
+            $type = "int";
         }  
     | IDENTIFIANT 
         { 
-        VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);            
+        VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
+        $type = vi.type;            
         $code = "PUSH"+ getScope(vi)+ vi.address + "\n";
         }
 
@@ -375,6 +437,8 @@ COMMENTAIRE
 NEWLINE : '\r'? '\n'  ;
 
 ENTIER : ('0'..'9')+  ;
+
+FLOTTANT : (ENTIER+ '.' ENTIER*);
 
 TYPE : 'int' | 'double' ;
 

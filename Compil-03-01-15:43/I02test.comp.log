@@ -1,2 +1,0 @@
-Warning: TestRig moved to org.antlr.v4.gui.TestRig; calling automatically
-line 3:11 no viable alternative at input 'intu=1\nintz=42\nif(z<u)print'
