@@ -305,29 +305,43 @@ expression returns [ String code, String type]
             $code = "PUSHI 0\n"+ $d.code + "SUB\n";
         }
     | a = expression op=('*'|'/') b=expression
-        {   
-            if ($a.type == "double" || $b.type == "double"){
-                $type = "double";
-                if($op.text.equals("*")){ $code = $a.code + $b.code + "FMUL\n";}
-                else {$code = $a.code + $b.code + "FDIV\n";}
-            }else{
-                $type = "int";
-                if($op.text.equals("*")){ $code = $a.code + $b.code + "MUL\n";}
-                else {$code = $a.code + $b.code + "DIV\n";}
+    {
+        if($a.type.equals("double") || $b.type.equals("double")) {
+            $type = "double";
+            $a.code= $a.type.equals("int") ? $a.code + "ITOF\n" : $a.code;
+            $b.code= $b.type.equals("int") ? $b.code + "ITOF\n" : $b.code;
+            if($op.text.equals("*")){ 
+                $code = $a.code + $b.code + "FMUL\n";
+            } else {
+                $code = $a.code + $b.code + "FDIV\n";
             }
+        }else {
+            $type = "int";
+            if($op.text.equals("*")){ $code = $a.code + $b.code + "MUL\n";}
+            else {$code = $a.code + $b.code + "DIV\n";}
         }
+    }
     | a = expression op=('+'|'-') b=expression
-        {   
-            if ($a.type == "double" || $b.type == "double"){
-                $type = "double";
-                if($op.text.equals("+")){ $code = $a.code + $b.code + "FADD\n";}
-                else {$code = $a.code + $b.code + "FSUB\n";}
-            }else{
-                $type = "int";
-                if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
-                else {$code = $a.code + $b.code + "SUB\n";}
+    {
+        if ($a.type == "double" || $b.type == "double"){
+            $type = "double";
+            if($a.type == "int"){ 
+                $a.code += "ITOF\n";
             }
+            if($b.type == "int"){ 
+                $b.code += "ITOF\n";
+            }
+            if($op.text.equals("+")){ 
+                $code = $a.code + $b.code + "FADD\n";
+            } else {
+                $code = $a.code + $b.code + "FSUB\n";
+            }
+        }else {
+            $type = "int";
+            if($op.text.equals("+")){ $code = $a.code + $b.code + "ADD\n";}
+            else {$code = $a.code + $b.code + "SUB\n";}
         }
+    }
     | FLOTTANT
         {
             $type = "double";
@@ -370,7 +384,7 @@ expression returns [ String code, String type]
 
 conditionbasique returns [ String code, String type]
     :
-    |a = expression '<' b = expression 
+    | a = expression '<' b = expression 
     {
         if($a.type.equals("double")) {
             $type = $a.type ;
@@ -390,7 +404,7 @@ conditionbasique returns [ String code, String type]
     	| a = expression '>' b = expression 
     {
        
-         if($a.type.equals("double")) {
+        if($a.type.equals("double")) {
             $type = $a.type ;
             $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
             $code = $a.code + $b.code + "FSUP\n";  
