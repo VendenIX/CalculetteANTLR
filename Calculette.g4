@@ -368,23 +368,112 @@ expression returns [ String code, String type]
 
     ;
 
-conditionbasique returns [ String code ]
-    : a = expression op=('=='|'!='|'<>') b=expression
-        {
-            if($op.text.equals("==")){ $code = $a.code + $b.code + "EQUAL\n";}
-            else {$code = $a.code + $b.code + "NEQ\n";}
+conditionbasique returns [ String code, String type]
+    :
+    |a = expression '<' b = expression 
+    {
+        if($a.type.equals("double")) {
+            $type = $a.type ;
+            /*Si $b.type.equals("double") alors on ne fait rien (conversion implicite), sinon on convertit b en double*/
+            $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
+            $code = $a.code + $b.code + "FINF\n";  
+        }else if($b.type.equals("double")) {
+            $type = $b.type ;
+            $a.code= $a.type.equals("double") ? $a.code : $a.code + "ITOF\n";
+            $code = $a.code + $b.code + "FINF\n";  
+        }else {
+            $type = $a.type ;
+            $code = $a.code + $b.code + "INF\n";  
         }
-    | a = expression op=('<'|'>') b=expression
-        {
-            if($op.text.equals("<")){ $code = $a.code + $b.code + "INF\n";}
-            else {$code = $a.code + $b.code + "SUP\n";}
+    }
+    |
+    	| a = expression '>' b = expression 
+    {
+       
+         if($a.type.equals("double")) {
+            $type = $a.type ;
+            $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
+            $code = $a.code + $b.code + "FSUP\n";  
+                 
+        }else if($b.type.equals("double")) {
+             $type = $b.type ;    
+            $a.code= $a.type.equals("double") ? $a.code : $a.code + "ITOF\n";
+            $code = $a.code + $b.code + "FSUP\n";             
+        }else {
+            $type = $a.type ;    
+            $code = $a.code + $b.code + "SUP\n";  
         }
-    | a = expression op=('<='|'>=') b=expression
-        {
-            if($op.text.equals("<=")){ $code = $a.code + $b.code + "INFEQ\n";}
-            else {$code = $a.code + $b.code + "SUPEQ\n";}
+        
+    }
+	| a = expression '>=' b = expression 
+    {
+        if($a.type.equals("double")) {
+            $type = $a.type ;
+            $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
+            $code = $a.code + $b.code + "FSUPEQ\n";  
+        }else if($b.type.equals("double")) {
+            $type = $b.type ;
+            $a.code= $a.type.equals("double") ? $a.code : $a.code + "ITOF\n";
+            $code = $a.code + $b.code + "FSUPEQ\n";  
+        }else {
+            $type = $a.type ; 
+            $code = $a.code + $b.code + "SUPEQ\n";  
         }
+
+    }
+    	| a = expression '<=' b = expression 
+    {   
+         if($a.type.equals("double")) {
+            $type = $a.type ;
+            $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
+            $code = $a.code + $b.code + "FINFEQ\n";  
+                 
+        }else if($b.type.equals("double")) {
+            $type = $b.type ;
+            $a.code= $a.type.equals("double") ? $a.code : $a.code + "ITOF\n";
+            $code = $a.code + $b.code + "FINFEQ\n";  
+        }else {
+         $type = $a.type ;             
+         $code = $a.code + $b.code + "INFEQ\n";  
+        }
+        
+    }
+    | a = expression '==' b = expression
+    {
+         if($a.type.equals("double")) {
+            $type = $a.type ;    
+            $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
+            $code = $a.code + $b.code + "FEQUAL\n";  
+                 
+        }else if($b.type.equals("double")) {
+            $type = $b.type ;    
+            $a.code= $a.type.equals("double") ? $a.code : $a.code + "ITOF\n";
+            $code = $a.code + $b.code + "FEQUAL\n";  
+                 
+        }else {
+            $type = $a.type ;
+            $code = $a.code + $b.code + "EQUAL\n";  
+        }
+        
+    }
+    | a = expression ('!='|'<>') b = expression
+    {
+         if($a.type.equals("double")) {    
+            $type = $a.type ;
+            $b.code= $b.type.equals("double") ? $b.code : $b.code + "ITOF\n";
+            $code = $a.code + $b.code + "FNEQ\n";  
+                 
+        }else if($b.type.equals("double")) {   
+            $type = $b.type ;
+            $a.code= $a.type.equals("double") ? $a.code : $a.code + "ITOF\n";
+            $code = $a.code + $b.code + "FNEQ\n";  
+        }else {
+            $type = $a.type ;
+            $code = $a.code + $b.code + "NEQ\n";  
+        }
+    }
     ;
+
 
 fonction returns [ String code ]
 @init{ tablesSymboles.enterFunction();}
