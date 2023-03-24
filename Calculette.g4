@@ -379,7 +379,15 @@ expression returns [ String code, String type]
                 $code += "POP \n";
             }
         }
-
+    | '(' TYPE ')' expression 
+        { 
+            $type = $TYPE.text;
+            $code = $expression.code;
+                if($TYPE.text.equals("int"))
+                    $code += "\tFTOI\n";
+                if($TYPE.text.equals("double"))
+                    $code += "\tITOF\n";
+        }
     ;
 
 conditionbasique returns [ String code, String type]
