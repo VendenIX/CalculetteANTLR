@@ -232,7 +232,7 @@ sortie returns [ String code ]
             if ($expression.type != "double"){
                 $code = $expression.code +"WRITE\nPOP \n";
             } else {
-                $code = $expression.code + "WRITEF\nPOP \n";
+                $code = $expression.code+"WRITEF\nPOP\nPOP\n";
             }
         }
 
@@ -280,14 +280,15 @@ instruction returns [ String code ]
         {
             $code = $fonction.code;
         }
-    | RETURN expression finInstruction
-        {   
+    | RETURN expression finInstruction {
             VariableInfo vi = tablesSymboles.getReturn();
-            if (!$expression.type.equals("double")){
-                $code = $expression.code + "STOREL "+ vi.address+"\n"+"RETURN\n";
+            if(vi.type.equals("double")){
+                $expression.code = $expression.type.equals("double") ? $expression.code : $expression.code + "ITOF\n";
+                $code = $expression.code + "STOREL "+ (vi.address+1) + "\nSTOREL "+vi.address+"\n";
             }else{
-                $code = $expression.code + "STOREL "+ (vi.address + 1)+ "\n" + "STOREL "+ vi.address +"\n"+"RETURN\n";
+                $code = $expression.code + "STOREL "+vi.address+"\n";
             }
+                $code +="RETURN\n";
         }
     ;
 
@@ -432,12 +433,20 @@ args returns [String code, int size]
     : ( expression
         {
             $code += $expression.code;
-            $size++;
+            if($expression.type.equals("double")){
+                $size +=2;
+            } else{
+                $size +=1;
+            }
         }
       ( ',' expression
         {
             $code += $expression.code;
-            $size++;
+            if($expression.type.equals("double")){
+                $size +=2;
+            } else{
+                $size +=1;
+            }
         }
       )*
     )?
