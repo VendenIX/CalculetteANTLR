@@ -229,7 +229,7 @@ entree returns [ String code ]
 sortie returns [ String code ] 
     : 'print' '(' expression ')'
         {
-            if ($expression.type != "double"){
+            if (!$expression.type.equals("double")){
                 $code = $expression.code +"WRITE\nPOP \n";
             } else {
                 $code = $expression.code+"WRITEF\nPOP\nPOP\n";
@@ -383,7 +383,7 @@ expression returns [ String code, String type]
         { 
             $type = $TYPE.text;
             $code = $expression.code;
-                if($TYPE.text.equals("int"))
+                if(!$TYPE.text.equals("int"))
                     $code += "\tFTOI\n";
                 if($TYPE.text.equals("double"))
                     $code += "\tITOF\n";
