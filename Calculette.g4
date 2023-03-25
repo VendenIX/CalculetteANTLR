@@ -342,13 +342,13 @@ expression returns [ String code, String type]
             else {$code = $a.code + $b.code + "SUB\n";}
         }
     }
-    | BOOLEEN
+    | BOOLEEN=('true' | 'false')
         {
             if($BOOLEEN.text.equals("true"))
             {
                 $code = "PUSHI 1\n";
             }else{
-                $code = "PUSHI 0\n"
+                $code = "PUSHI 0\n";
             }
             $type="bool";
 
@@ -395,10 +395,27 @@ expression returns [ String code, String type]
         { 
             $type = $TYPE.text;
             $code = $expression.code;
-                if($TYPE.text.equals("int"))
-                    $code += "\tFTOI\n";
-                if($TYPE.text.equals("double"))
-                    $code += "\tITOF\n";
+                if($TYPE.text.equals("int")){ 
+                    if($expression.type.equals("double")){
+                        $code += "\tFTOI\n";
+                    }
+                }
+                    
+                if($TYPE.text.equals("double")){
+                    if(!$expression.text.equals("double")){
+                        $code += "\tITOF\n";
+                    }
+                }
+
+                if($TYPE.text.equals("bool")){
+                    if($expression.text.equals("double")){
+                        $code += "\tITOF\nPUSHI 0\nSUP\n";
+                    }else if ($expression.text.equals("int")){ 
+                        $code += "PUSHI 0\nSUP\n";
+                    }
+                }
+
+                    
         }
     ;
 
@@ -579,12 +596,14 @@ finInstruction : ( NEWLINE | ';' )+ ;
 
 COMMENTAIRE
     // Simple commentaire      Commentaire multi-lignes
-    : (('%' ~('\n'|'\r')*) | ('/*' .*? '*/'))
+    : (('%' ~('\n'|'\r')*) | ('#' ~('\n'|'\r')*) | ('/*' .*? '*/'))
     -> skip
     ;
 
 // lexer
 NEWLINE : '\r'? '\n'  ;
+
+BOOLEEN : 'true' | 'false';
 
 ENTIER : ('0'..'9')+  ;
 
@@ -597,8 +616,8 @@ RETURN: 'return';
 IDENTIFIANT
     :   ('a'..'z' | 'A'..'Z' | '_')('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
     ;
-    
-B00LEEN : 'true' | 'false';
+
+
 
 
 // Ignorer les espaces et les tabulations
