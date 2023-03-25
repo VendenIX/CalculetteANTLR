@@ -342,6 +342,18 @@ expression returns [ String code, String type]
             else {$code = $a.code + $b.code + "SUB\n";}
         }
     }
+    | BOOLEEN
+        {
+            if($BOOLEEN.text.equals("true"))
+            {
+                $code = "PUSHI 1\n";
+            }else{
+                $code = "PUSHI 0\n"
+            }
+            $type="bool";
+
+
+        } 
     | FLOTTANT
         {
             $type = "double";
@@ -351,7 +363,7 @@ expression returns [ String code, String type]
         {
             $code = "PUSHI " + $ENTIER.text + "\n";
             $type = "int";
-        }  
+        }
     | IDENTIFIANT 
         { 
         VariableInfo vi = tablesSymboles.getVar($IDENTIFIANT.text);
@@ -383,7 +395,7 @@ expression returns [ String code, String type]
         { 
             $type = $TYPE.text;
             $code = $expression.code;
-                if(!$TYPE.text.equals("int"))
+                if($TYPE.text.equals("int"))
                     $code += "\tFTOI\n";
                 if($TYPE.text.equals("double"))
                     $code += "\tITOF\n";
@@ -578,13 +590,16 @@ ENTIER : ('0'..'9')+  ;
 
 FLOTTANT : (ENTIER '.' ENTIER*);
 
-TYPE : 'int' | 'double' ;
+TYPE : 'int' | 'double' | 'bool' ;
 
 RETURN: 'return';
 
 IDENTIFIANT
     :   ('a'..'z' | 'A'..'Z' | '_')('a'..'z' | 'A'..'Z' | '_' | '0'..'9')*
     ;
+    
+B00LEEN : 'true' | 'false';
+
 
 // Ignorer les espaces et les tabulations
 WS :   (' '|'\t')+ -> skip  ;
