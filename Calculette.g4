@@ -211,6 +211,10 @@ condition returns [ String code]
     |'false'
         {$code = "PUSHI 0\n";
         }
+    | expression
+        {
+            $code = $expression.code;
+        }
     ;
 
 entree returns [ String code ] 
@@ -397,19 +401,19 @@ expression returns [ String code, String type]
             $code = $expression.code;
                 if($TYPE.text.equals("int")){ 
                     if($expression.type.equals("double")){
-                        $code += "\tFTOI\n";
+                        $code += "FTOI\n";
                     }
                 }
                     
                 if($TYPE.text.equals("double")){
                     if(!$expression.text.equals("double")){
-                        $code += "\tITOF\n";
+                        $code += "ITOF\n";
                     }
                 }
 
                 if($TYPE.text.equals("bool")){
                     if($expression.text.equals("double")){
-                        $code += "\tITOF\nPUSHI 0\nSUP\n";
+                        $code += "ITOF\nPUSHI 0\nSUP\n";
                     }else if ($expression.text.equals("int")){ 
                         $code += "PUSHI 0\nSUP\n";
                     }
